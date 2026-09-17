@@ -599,7 +599,7 @@ def get_stats_config(public_only=False):
                         'in_bps':sum(x['last_in_bps'] for x in selected) if selected and all(x['last_in_bps'] is not None for x in selected) else None,
                         'out_bps':sum(x['last_out_bps'] for x in selected) if selected and all(x['last_out_bps'] is not None for x in selected) else None,
                         'rrd_available':any(x.get('rrd_available') for x in selected)}
-    return {'ports':ports,'groups':groups,'public_url':'http://10.1.1.62:8991/'}
+    return {'ports':ports,'groups':groups,'public_url':'https://stats-dev.ji.iix.net.id/'}
 
 def stats_group_graph(group_id):
     g=query('SELECT * FROM stats_public_groups WHERE id=? AND enabled=1',(int(group_id),),one=True)
@@ -673,13 +673,19 @@ def assign_peer_port(asn, d):
     if status not in ('up','down'): raise Problem('Status port tidak valid.')
     mac=str(d.get('mac_address','')).strip()
     if mac and not re.fullmatch(r'(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}',mac): raise Problem('MAC address tidak valid.')
-    existing=query('SELECT id,type FROM ports WHERE member_asn=?',(asn,),one=True)
+
+    existing=query('SELECT id,type FROM ports WHERE switch_id=? AND port_number=?',(sw['id'],port_number),one=True)
     if existing:
-        query('UPDATE ports SET switch_id=?,port_number=?,status=?,bandwidth=?,mac_address=? WHERE id=?',(sw['id'],port_number,status,bandwidth,mac,existing['id']))
+        query('UPDATE ports SET member_asn=?,status=?,bandwidth=?,mac_address=? WHERE id=?',(asn,status,bandwidth,mac,existing['id']))
         pid=existing['id']; physical_type=existing['type']
     else:
-        physical_type='Belum terdeteksi'
-        pid=query('INSERT INTO ports(switch_id,member_asn,port_number,type,status,bandwidth,mac_address) VALUES(?,?,?,?,?,?,?)',(sw['id'],asn,port_number,physical_type,status,bandwidth,mac))
+        existing_assign=query('SELECT id FROM ports WHERE member_asn=?',(asn,),one=True)
+        if existing_assign:
+            query('UPDATE ports SET switch_id=?,port_number=?,status=?,bandwidth=?,mac_address=? WHERE id=?',(sw['id'],port_number,status,bandwidth,mac,existing_assign['id']))
+            pid=existing_assign['id']; physical_type='Belum terdeteksi'
+        else:
+            physical_type='Belum terdeteksi'
+            pid=query('INSERT INTO ports(switch_id,member_asn,port_number,type,status,bandwidth,mac_address) VALUES(?,?,?,?,?,?,?)',(sw['id'],asn,port_number,physical_type,status,bandwidth,mac))
     return {'id':pid,'port_number':port_number,'physical_type':physical_type,'bandwidth':bandwidth}
 
 def infer_vendor_model(text):

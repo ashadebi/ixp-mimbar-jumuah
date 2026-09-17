@@ -114,15 +114,50 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
 
 async function assignConnection(asn){
   const ls=await api('/switches');
+  window.ls_data = ls;
+  window.updatePortList = function(swId, switches) {
+    const sw = switches.find(s => s.id == swId);
+    const sel = document.getElementById('f-port');
+    sel.innerHTML = '<option value="">Pilih Port</option>';
+    if(!sw) return;
+    const sorted = [...sw.ports].sort((a,b)=>a.port_number.localeCompare(b.port_number, undefined, {numeric:true}));
+    for(const p of sorted) {
+      sel.innerHTML += `<option value="${esc(p.port_number)}" data-type="${esc(p.type)}" data-bw="${esc(p.bandwidth)}">${esc(p.port_number)}</option>`;
+    }
+  };
+  window.updatePortDetails = function(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    if(opt && opt.value) {
+      const t = opt.getAttribute('data-type');
+      document.getElementById('f-typedisp').textContent = t || 'Belum terdeteksi';
+      document.getElementById('f-typehint').textContent = (t && t !== 'Belum terdeteksi') ? 'Terdeteksi via SNMP.' : 'Data kecepatan interface SNMP belum tersedia.';
+      document.getElementById('f-extype').value = t || '';
+      const bw = opt.getAttribute('data-bw');
+      if(bw) document.querySelector('[name=bandwidth]').value = bw;
+    } else {
+      document.getElementById('f-typedisp').textContent = 'Belum terdeteksi';
+      document.getElementById('f-typehint').textContent = 'Pilih port untuk melihat tipe.';
+    }
+  };
   showDialog('Assign Port AS' + asn,
     `<div class="form-grid">
        <div>
-         <label class="label" for="f-switch_id">Switch</label>
-         <select class="field" id="f-switch_id" name="switch_id">
+         <label class="label" for="f-switch">Switch</label>
+         <select class="field" name="switch_id" id="f-switch" onchange="updatePortList(this.value, ls_data)">
+           <option value="">Pilih Switch</option>
            ${ls.map(s => `<option value="${s.id}">${esc(s.name)} (${esc(s.ip)})</option>`).join('')}
          </select>
        </div>
-       ${field('Port', 'port_number', 'mis. xe-0/0/2')}<div><span class=label>Tipe port fisik</span><div>Belum terdeteksi</div><small>Data kecepatan interface SNMP belum tersedia.</small></div>
+       <div>
+         <label class="label" for="f-port">Port</label>
+         <div style="display:flex;gap:0.5rem">
+           <select class="field" id="f-port" onchange="updatePortDetails(this); if(this.value){document.getElementById('f-port-input').value=this.value}">
+             <option value="">Pilih / Ketik manual...</option>
+           </select>
+           <input class="field" name="port_number" id="f-port-input" placeholder="mis. xe-0/0/2" style="flex:1">
+         </div>
+       </div>
+       <div><span class=label>Tipe port fisik</span><div id="f-typedisp">Belum terdeteksi</div><small id="f-typehint">Pilih port untuk melihat tipe.</small></div>
        
        <div>
          <label class="label" for="f-status">Status</label>

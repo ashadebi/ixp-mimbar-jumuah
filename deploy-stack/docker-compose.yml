@@ -11,8 +11,8 @@ services:
     ports:
       - "8989:8989"
     volumes:
-      - /opt/arouterserver:/app
-      - /opt/arouterserver/dashboard/data:/data
+      - ${MIMBAR_INSTALL_DIR:-/opt/arouterserver}:/app
+      - ${MIMBAR_DATA_DIR:-${MIMBAR_INSTALL_DIR:-/opt/arouterserver}/dashboard/data}:/data
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - TZ=Asia/Jakarta
