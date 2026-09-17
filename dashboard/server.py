@@ -43,13 +43,18 @@ def syslog_proxy(handler, path):
     try:
         subpath = path.replace('/api/syslog', '', 1)
         if not subpath: subpath = '/summary'
-        url = SYSLOG_COLLECTOR_URL + subpath
+        if subpath not in {'/summary','/logs','/events','/sources'}:
+            return handler.response({'error':'Not found'},404)
+        query_string = urlsplit(handler.path).query
+        url = SYSLOG_COLLECTOR_URL + subpath + ('?' + query_string if query_string else '')
         req = urllib.request.Request(url, headers={'X-Syslog-Token': SYSLOG_COLLECTOR_TOKEN})
         with urllib.request.urlopen(req, timeout=5) as res:
             data = json.loads(res.read().decode('utf-8'))
             handler.response(data, res.status)
-    except Exception as e:
-        handler.response({'error': str(e)}, 502)
+    except urllib.error.HTTPError as e:
+        handler.response({'error': 'Syslog request rejected'}, e.code if e.code in (400,404) else 502)
+    except Exception:
+        handler.response({'error': 'Syslog collector unavailable'}, 502)
 
 
 class Problem(Exception):

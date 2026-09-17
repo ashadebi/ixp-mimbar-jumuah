@@ -34,9 +34,15 @@ class API(BaseHTTPRequestHandler):
  def do_GET(self):
   if self.path=='/health': return self.sendj({'ok':True})
   if not self.auth(): return self.sendj({'error':'unauthorized'},401)
-  path=urllib.parse.urlsplit(self.path).path
+  parsed=urllib.parse.urlsplit(self.path)
+  path=parsed.path
+  params=urllib.parse.parse_qs(parsed.query)
   if path=='/summary': return self.sendj(store.summary())
-  if path=='/logs': return self.sendj({'items':store.list_logs()})
+  if path=='/logs':
+   try: result=store.list_logs(params.get('limit',['20'])[0],params.get('offset',['0'])[0],params.get('source',[None])[0])
+   except (ValueError,OverflowError): return self.sendj({'error':'Invalid limit or offset'},400)
+   return self.sendj(result)
+  if path=='/sources': return self.sendj({'items':store.list_sources()})
   if path=='/events': return self.sendj({'items':store.list_events()})
   return self.sendj({'error':'not found'},404)
 def main():

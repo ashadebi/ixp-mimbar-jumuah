@@ -4,6 +4,7 @@ const icons={grid:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',pin:'M
 const I=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${icons[n]||icons.grid}"/></svg>`;
 let session=null,state=null,view='overview',selectedLocation='SUB',locationTab='overview',detail=null,page=1,search='',family='all',selectedMachine='',selectedJob=null,deployVersions=[],poll=null;
 let members=null;
+let syslogPageNumber=1,syslogSource='';
 
 async function manageSwitches(){
   const ls=await api('/switches');
@@ -108,8 +109,8 @@ async function rollbackDeploymentVersion(id){const m=state.machines.find(m=>m.id
 
 async function previewJob(id){const j=await api('/jobs/'+id);const dialog=$('#modal');dialog.innerHTML=`<div class="dialog-head"><h2>Build ${j.id.slice(0,8)}</h2><button class="iconbtn" data-action="close-modal" aria-label="Tutup">${I('close')}</button></div><div class="card-body"><p class="help">${statusBadge(j.status)} · BIRD 2.19.2</p><pre class="code">${esc(j.config||j.log||'Konfigurasi belum tersedia.')}</pre></div>`;dialog.showModal()}
 async function download(id){const j=await api('/jobs/'+id);if(!j.config)throw Error('Build belum menghasilkan konfigurasi.');const url=URL.createObjectURL(new Blob([j.config],{type:'text/plain'}));const a=document.createElement('a');a.href=url;a.download=`bird-${j.location}-${j.machine}-${j.id.slice(0,8)}.conf`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function bindContent(){const qs=$('#peer-search');if(qs)qs.oninput=e=>{const pos=e.target.selectionStart;search=e.target.value;page=1;render();$('#peer-search').focus();$('#peer-search').setSelectionRange(pos,pos)};if($('#peer-family'))$('#peer-family').onchange=e=>{family=e.target.value;page=1;render()};if($('#peer-location'))$('#peer-location').onchange=async e=>{selectedLocation=e.target.value;detail=await api('/locations/'+selectedLocation);page=1;render()};if($('#editor-file'))$('#editor-file').onchange=async e=>{detail[editorFile]=$('#yaml-editor').value;editorFile=e.target.value;if(editorFile.endsWith('.j2') && typeof detail[editorFile] === 'undefined'){try{const r=await api('/locations/'+selectedLocation+'/templates/'+editorFile);detail[editorFile]=r.content;}catch(err){toast(err.message);}}render()};if($('#deploy-machine'))$('#deploy-machine').onchange=async e=>{selectedMachine=e.target.value;selectedJob=null;deployVersions=await api('/machines/'+selectedMachine+'/deployments');render()}}
-async function action(a){if(a==='logout'){await api('/logout','POST',{});session=null;clearInterval(poll);login(false)}else if(a==='menu')$('.sidebar').classList.toggle('open');else if(a==='close-modal')$('#modal').close();else if(a==='refresh'){await refresh();if(view==='location'||view==='peers'){detail=await api('/locations/'+selectedLocation);try{detail.templates=await api('/locations/'+selectedLocation+'/templates')}catch(e){}}render();toast('Data dimuat ulang.')}else if(a==='add-location')addLocation();else if(a==='add-machine')addMachine();else if(a==='edit-policy')editPolicy();else if(a==='add-peer')addPeer();else if(a==='add-switch')addSwitch();else if(a==='add-node')addNode();else if(a==='add-iixji')addIixjiMember();else if(a==='edit-machine')editMachine();else if(a==='deploy'){if(selectedMachine)deployVersions=await api('/machines/'+selectedMachine+'/deployments');await navigate('deploy');}else if(a==='prev-page'){page=Math.max(1,page-1);render()}else if(a==='next-page'){page++;render()}else if(a==='save-config'){detail[editorFile]=$('#yaml-editor').value;if(editorFile.endsWith('.j2')){await api('/locations/'+selectedLocation+'/templates/'+editorFile,'PUT',{content:detail[editorFile]});toast('Template disimpan.');}else{await api('/locations/'+selectedLocation,'PUT',{general:detail.general,clients:detail.clients,revision:detail.revision});detail=await api('/locations/'+selectedLocation);try{detail.templates=await api('/locations/'+selectedLocation+'/templates')}catch(e){};await refresh();toast('Draft disimpan. Buat build baru untuk menerapkan perubahan.')}render();}else if(a==='check-ssh'){toast('Memeriksa koneksi SSH…');const r=await api('/machines/'+selectedMachine+'/check','POST',{});await refresh();render();toast(r.output.slice(0,150))}else if(a==='build'){const r=await api('/machines/'+selectedMachine+'/build','POST',{});selectedJob=r.id;await refresh();render();toast('Build masuk antrean.')}else if(a==='validate'){await api('/jobs/'+currentJob().id+'/validate','POST',{});await refresh();render()}else if(a==='deploy-confirm'){const m=state.machines.find(m=>m.id===selectedMachine),j=currentJob();showDialog('Tinjau deployment',`<div class="notice">${I('alert')}<span>Konfigurasi aktif <b>${esc(m.name)}</b> (${esc(m.host)}) akan diganti. Agent memvalidasi ulang, membuat backup, lalu menjalankan reload BIRD.</span></div><p class="help">Build ${j.id.slice(0,8)} · SHA-256 ${j.sha256.slice(0,16)}…<br>Perubahan dapat memicu restart sesi BGP yang terdampak.</p>${field('Ketik nama mesin: '+m.name,'confirmation')}`,async d=>{await api('/jobs/'+j.id+'/deploy','POST',d);toast('Deployment dimulai. Pantau hasil pada log build.')});$('#modal button[type="submit"]').textContent='Terapkan konfigurasi'}}
+function bindContent(){const sf=$('#syslog-source');if(sf)sf.onchange=e=>{syslogSource=e.target.value;syslogPageNumber=1;render()};const qs=$('#peer-search');if(qs)qs.oninput=e=>{const pos=e.target.selectionStart;search=e.target.value;page=1;render();$('#peer-search').focus();$('#peer-search').setSelectionRange(pos,pos)};if($('#peer-family'))$('#peer-family').onchange=e=>{family=e.target.value;page=1;render()};if($('#peer-location'))$('#peer-location').onchange=async e=>{selectedLocation=e.target.value;detail=await api('/locations/'+selectedLocation);page=1;render()};if($('#editor-file'))$('#editor-file').onchange=async e=>{detail[editorFile]=$('#yaml-editor').value;editorFile=e.target.value;if(editorFile.endsWith('.j2') && typeof detail[editorFile] === 'undefined'){try{const r=await api('/locations/'+selectedLocation+'/templates/'+editorFile);detail[editorFile]=r.content;}catch(err){toast(err.message);}}render()};if($('#deploy-machine'))$('#deploy-machine').onchange=async e=>{selectedMachine=e.target.value;selectedJob=null;deployVersions=await api('/machines/'+selectedMachine+'/deployments');render()}}
+async function action(a){if(a==='logout'){await api('/logout','POST',{});session=null;clearInterval(poll);login(false)}else if(a==='menu')$('.sidebar').classList.toggle('open');else if(a==='close-modal')$('#modal').close();else if(a==='refresh'){await refresh();if(view==='location'||view==='peers'){detail=await api('/locations/'+selectedLocation);try{detail.templates=await api('/locations/'+selectedLocation+'/templates')}catch(e){}}render();toast('Data dimuat ulang.')}else if(a==='add-location')addLocation();else if(a==='add-machine')addMachine();else if(a==='edit-policy')editPolicy();else if(a==='add-peer')addPeer();else if(a==='add-switch')addSwitch();else if(a==='add-node')addNode();else if(a==='add-iixji')addIixjiMember();else if(a==='edit-machine')editMachine();else if(a==='deploy'){if(selectedMachine)deployVersions=await api('/machines/'+selectedMachine+'/deployments');await navigate('deploy');}else if(a==='syslog-prev'){syslogPageNumber=Math.max(1,syslogPageNumber-1);render()}else if(a==='syslog-next'){syslogPageNumber++;render()}else if(a==='prev-page'){page=Math.max(1,page-1);render()}else if(a==='next-page'){page++;render()}else if(a==='save-config'){detail[editorFile]=$('#yaml-editor').value;if(editorFile.endsWith('.j2')){await api('/locations/'+selectedLocation+'/templates/'+editorFile,'PUT',{content:detail[editorFile]});toast('Template disimpan.');}else{await api('/locations/'+selectedLocation,'PUT',{general:detail.general,clients:detail.clients,revision:detail.revision});detail=await api('/locations/'+selectedLocation);try{detail.templates=await api('/locations/'+selectedLocation+'/templates')}catch(e){};await refresh();toast('Draft disimpan. Buat build baru untuk menerapkan perubahan.')}render();}else if(a==='check-ssh'){toast('Memeriksa koneksi SSH…');const r=await api('/machines/'+selectedMachine+'/check','POST',{});await refresh();render();toast(r.output.slice(0,150))}else if(a==='build'){const r=await api('/machines/'+selectedMachine+'/build','POST',{});selectedJob=r.id;await refresh();render();toast('Build masuk antrean.')}else if(a==='validate'){await api('/jobs/'+currentJob().id+'/validate','POST',{});await refresh();render()}else if(a==='deploy-confirm'){const m=state.machines.find(m=>m.id===selectedMachine),j=currentJob();showDialog('Tinjau deployment',`<div class="notice">${I('alert')}<span>Konfigurasi aktif <b>${esc(m.name)}</b> (${esc(m.host)}) akan diganti. Agent memvalidasi ulang, membuat backup, lalu menjalankan reload BIRD.</span></div><p class="help">Build ${j.id.slice(0,8)} · SHA-256 ${j.sha256.slice(0,16)}…<br>Perubahan dapat memicu restart sesi BGP yang terdampak.</p>${field('Ketik nama mesin: '+m.name,'confirmation')}`,async d=>{await api('/jobs/'+j.id+'/deploy','POST',d);toast('Deployment dimulai. Pantau hasil pada log build.')});$('#modal button[type="submit"]').textContent='Terapkan konfigurasi'}}
 document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||b.disabled||(b.type==='submit'&&b.form))return;try{if(b.dataset.member)await reviewMember(b.dataset.member);else if(b.dataset.view)await navigate(b.dataset.view);else if(b.dataset.location)await openLocation(b.dataset.location,b.dataset.config==='true');else if(b.dataset.machine){selectedMachine=b.dataset.machine;selectedJob=null;await navigate('deploy')}else if(b.dataset.tab){locationTab=b.dataset.tab;render()}else if(b.dataset.removePeer)removePeer(b.dataset.removePeer);else if(b.dataset.assignPeer)await assignConnection(b.dataset.assignPeer);else if(b.dataset.jobPreview)await previewJob(b.dataset.jobPreview);else if(b.dataset.jobDownload)await download(b.dataset.jobDownload);else if(b.dataset.versionDetail)await showDeploymentVersion(b.dataset.versionDetail);else if(b.dataset.versionRollback)await rollbackDeploymentVersion(b.dataset.versionRollback);else if(b.dataset.addPort)await addPort(Number(b.dataset.addPort));else if(b.dataset.deleteNode)await deleteNode(Number(b.dataset.deleteNode));else if(b.dataset.managePorts)await managePorts(Number(b.dataset.managePorts));else if(b.dataset.editIixji)await editIixjiMember(b.dataset.editIixji);else if(b.dataset.delIixji)await delIixjiMember(b.dataset.delIixji);else if(b.dataset.discoverSwitch)await discoverSwitch(Number(b.dataset.discoverSwitch));else if(b.dataset.selectJob){selectedJob=b.dataset.selectJob;render()}else if(b.dataset.action){b.disabled=true;await action(b.dataset.action)}}catch(err){toast(err.message)}finally{if(b.isConnected)b.disabled=false}});
 
 async function assignConnection(asn){
@@ -205,62 +206,17 @@ async function assignConnection(asn){
 }
 
 async function syslogPage(){
-  const summary = await api('/syslog/summary');
-  const events = await api('/syslog/events');
-  const logs = await api('/syslog/logs');
-  
-  let html = heading('Syslog & Analisis Switch', 'Monitoring event syslog, korelasi port, vendor MAC, dan masalah jaringan.');
-  
-  html += `<div class="metrics">
-    <div class="metric"><div class="metric-val">${summary.logs||0}</div><div class="metric-lbl">Total Logs (36 Jam)</div></div>
-    <div class="metric"><div class="metric-val">${summary.events||0}</div><div class="metric-lbl">Total Events Terdeteksi</div></div>
-  </div>`;
-  
-  html += `<div class="card mb"><div class="card-head"><h2>Daftar Masalah Terdeteksi</h2></div><div class="table-wrap"><table>
-  <thead><tr><th>Timestamp</th><th>Switch / Host</th><th>Port / MAC</th><th>Vendor</th><th>Tipe Problem</th><th>Dedupe Count</th><th>Korelasi Owner vs Identity</th></tr></thead><tbody>`;
-  
-  for(const e of (events.items||[])){
-    let corrInfo = '-';
-    if(e.correlation){
-      try {
-        const c = typeof e.correlation === 'string' ? JSON.parse(e.correlation) : e.correlation;
-        const owner = c.admin_port ? `AS${c.admin_port.member_asn} (${c.admin_port.member_name||''})` : 'Unassigned';
-        corrInfo = `Owner: ${esc(owner)} | Port: ${esc(c.admin_port?.port_number||'-')}`;
-        if(c.mismatch) corrInfo += ` <span class="badge red">Mismatch</span>`;
-      } catch(err){}
-    }
-    html += `<tr>
-      <td>${date(e.last_ts)}</td>
-      <td><strong>${esc(e.host||e.source_ip)}</strong><br><small>${esc(e.source_ip)}</small></td>
-      <td>Interface: ${esc(e.interface||'-')}<br><small>MAC: ${esc(e.mac||'-')}</small></td>
-      <td>${esc(e.vendor||'Unknown')}</td>
-      <td><span class="badge amber">${esc(e.type)}</span><br><small>Sev: ${e.severity} | Conf: ${e.confidence}</small></td>
-      <td><strong>${e.count}</strong></td>
-      <td>${corrInfo}</td>
-    </tr>`;
-  }
-  if(!(events.items||[]).length) html += `<tr><td colspan="7">Belum ada problem terdeteksi</td></tr>`;
-  html += `</tbody></table></div></div>`;
-  
-  html += `<div class="card"><div class="card-head"><h2>Raw Syslog Feed</h2></div><div class="table-wrap"><table>
-  <thead><tr><th>Timestamp</th><th>Source IP / Host</th><th>Pri / Sev</th><th>Interface / MAC</th><th>Vendor</th><th>Message</th></tr></thead><tbody>`;
-  
-  for(const l of (logs.items||[]).slice(0, 50)){
-    html += `<tr>
-      <td>${date(l.ts)}</td>
-      <td>${esc(l.host||l.source_ip)}<br><small>${esc(l.source_ip)}</small></td>
-      <td>${l.pri} / Sev ${l.severity}</td>
-      <td>${esc(l.interface||'-')}<br><small>${esc(l.mac||'-')}</small></td>
-      <td>${esc(l.vendor||'Unknown')}</td>
-      <td class="mono small">${esc(l.message)}</td>
-    </tr>`;
-  }
-  if(!(logs.items||[]).length) html += `<tr><td colspan="6">Belum ada syslog diterima</td></tr>`;
-  html += `</tbody></table></div></div>`;
-  
-  return html;
+  const pageSize=20,offset=(syslogPageNumber-1)*pageSize,sourceQuery=syslogSource?'&source='+encodeURIComponent(syslogSource):'';
+  const [summary,events,logs,sources]=await Promise.all([api('/syslog/summary'),api('/syslog/events?limit=20'),api(`/syslog/logs?limit=${pageSize}&offset=${offset}${sourceQuery}`),api('/syslog/sources')]);
+  const totalPages=Math.max(1,Math.ceil((logs.total||0)/pageSize));if(syslogPageNumber>totalPages){syslogPageNumber=totalPages;return syslogPage()}
+  let html=heading('Syslog & Analisis Switch','Monitoring event syslog, korelasi port, vendor MAC, dan masalah jaringan.');
+  html+=`<div class="metrics"><div class="metric"><div class="metric-val">${summary.logs||0}</div><div class="metric-lbl">Total Logs (36 Jam)</div></div><div class="metric"><div class="metric-val">${summary.events||0}</div><div class="metric-lbl">Total Events Terdeteksi</div></div></div>`;
+  html+=`<div class="card mb"><div class="card-head"><h2>Daftar Masalah Terdeteksi</h2></div><div class="table-wrap"><table><thead><tr><th>Timestamp</th><th>Switch / Host</th><th>Port / MAC</th><th>Vendor</th><th>Tipe Problem</th><th>Dedupe Count</th><th>Korelasi Owner vs Identity</th></tr></thead><tbody>`;
+  for(const e of(events.items||[])){let corrInfo='-';if(e.correlation){try{const c=typeof e.correlation==='string'?JSON.parse(e.correlation):e.correlation;const owner=c.admin_port?`AS${c.admin_port.member_asn} (${c.admin_port.member_name||''})`:'Unassigned';corrInfo=`Owner: ${esc(owner)} | Port: ${esc(c.admin_port?.port_number||'-')}`;if(c.mismatch)corrInfo+=' <span class="badge red">Mismatch</span>'}catch{}}html+=`<tr><td>${date(e.last_ts)}</td><td><strong>${esc(e.host||e.source_ip)}</strong><br><small>${esc(e.source_ip)}</small></td><td>${esc(e.interface||'-')}<br><small>${esc(e.mac||'-')}</small></td><td>${esc(e.vendor||'Unknown')}</td><td>${esc(e.type)}</td><td>${e.count}</td><td>${corrInfo}</td></tr>`}if(!(events.items||[]).length)html+='<tr><td colspan="7">Belum ada problem terdeteksi</td></tr>';html+='</tbody></table></div></div>';
+  html+=`<div class="card"><div class="card-head"><h2>Raw Syslog Feed</h2><label for="syslog-source">Host / sumber <select id="syslog-source" class="field"><option value="">Semua host</option>${(sources.items||[]).map(x=>{const value=x.source_ip||x.host,label=x.host&&x.host!==x.source_ip?`${x.host} (${x.source_ip})`:value;return `<option value="${esc(value)}" ${value===syslogSource?'selected':''}>${esc(label)} · ${x.count}</option>`}).join('')}</select></label></div><div class="table-wrap"><table><thead><tr><th>Timestamp</th><th>Source IP / Host</th><th>Pri / Sev</th><th>Interface / MAC</th><th>Vendor</th><th>Message</th></tr></thead><tbody>`;
+  for(const l of(logs.items||[]))html+=`<tr><td>${date(l.ts)}</td><td>${esc(l.host||l.source_ip)}<br><small>${esc(l.source_ip)}</small></td><td>${l.pri} / Sev ${l.severity}</td><td>${esc(l.interface||'-')}<br><small>${esc(l.mac||'-')}</small></td><td>${esc(l.vendor||'Unknown')}</td><td class="mono small">${esc(l.message)}</td></tr>`;if(!(logs.items||[]).length)html+='<tr><td colspan="6">Belum ada syslog diterima</td></tr>';
+  html+=`</tbody></table></div><div class="card-head"><span>Halaman ${syslogPageNumber} dari ${totalPages} · ${logs.total||0} log</span><div class="row"><button class="btn small" data-action="syslog-prev" ${syslogPageNumber<=1?'disabled':''}>Sebelumnya</button><button class="btn small" data-action="syslog-next" ${syslogPageNumber>=totalPages?'disabled':''}>Berikutnya</button></div></div></div>`;return html;
 }
-
 
 async function statsPage(){
   const cfg = await api('/stats/config');

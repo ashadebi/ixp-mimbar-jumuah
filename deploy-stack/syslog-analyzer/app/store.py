@@ -23,8 +23,18 @@ class Store:
   try:
    c=self.conn(); c.execute('pragma wal_checkpoint(truncate)'); c.close()
   except sqlite3.OperationalError: pass
- def list_logs(self,limit=100):
-  with self.conn() as c: return [dict(r) for r in c.execute('select * from logs order by ts desc limit ?', (min(int(limit),500),))]
+ def list_logs(self,limit=20,offset=0,source=None):
+  limit=max(1,min(int(limit),100)); offset=max(0,int(offset))
+  where=' where source_ip=? or host=?' if source else ''
+  base=[source,source] if source else []
+  with self.conn() as c:
+   items=[dict(r) for r in c.execute('select * from logs'+where+' order by ts desc, id desc limit ? offset ?',base+[limit,offset])]
+   total=c.execute('select count(*) n from logs'+where,base).fetchone()['n']
+  return {'items':items,'total':total,'limit':limit,'offset':offset}
+ def list_sources(self):
+  with self.conn() as c:
+   return [dict(r) for r in c.execute("select source_ip, max(nullif(host,'')) host, count(*) count from logs where source_ip is not null or host is not null group by source_ip order by coalesce(max(nullif(host,'')),source_ip) collate nocase")]
+
  def list_events(self,limit=100):
   with self.conn() as c: return [dict(r) for r in c.execute('select * from events order by last_ts desc limit ?', (min(int(limit),500),))]
  def summary(self):
