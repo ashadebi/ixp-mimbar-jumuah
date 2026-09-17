@@ -298,16 +298,26 @@ async function statsPage(){
   html += `<div class="card"><div class="row"><h3>Daftar Port Publik</h3><a href="${cfg.public_url}" target="_blank" class="btn small">Buka Halaman Publik</a></div>
   <table class="table"><thead><tr><th>Pilih</th><th>Switch</th><th>Port</th><th>Bandwidth</th><th>Member AS</th><th>Tersedia</th></tr></thead><tbody>`;
   
-  cfg.ports.forEach(p => {
-    html += `<tr>
-      <td><input type="checkbox" class="stat-port-cb" data-id="${p.port_id}" ${p.public_enabled ? 'checked' : ''}></td>
-      <td>${esc(p.node_name)} - ${esc(p.switch_name)}</td>
-      <td>${esc(p.port_number)}</td>
-      <td>${esc(p.bandwidth)}</td>
-      <td>AS${p.member_asn}</td>
-      <td>${p.rrd_available ? '<span class="badge success">Ya</span>' : '<span class="badge warning">Tdk</span>'}</td>
-    </tr>`;
-  });
+  const groupedPorts = cfg.ports.reduce((acc, p) => {
+    acc[p.switch_name] = acc[p.switch_name] || [];
+    acc[p.switch_name].push(p);
+    return acc;
+  }, {});
+
+  for (const [switchName, ports] of Object.entries(groupedPorts)) {
+    const nodeName = ports[0].node_name;
+    html += `<tr><td colspan="6" style="background:#f9f9f9; padding-top:10px;"><b>Switch: ${esc(switchName)} (${esc(nodeName)})</b></td></tr>`;
+    ports.forEach(p => {
+      html += `<tr>
+        <td><input type="checkbox" class="stat-port-cb" data-id="${p.port_id}" ${p.public_enabled ? 'checked' : ''}></td>
+        <td>${esc(p.node_name)} - ${esc(p.switch_name)}</td>
+        <td>${esc(p.port_number)}</td>
+        <td>${esc(p.bandwidth)}</td>
+        <td>AS${p.member_asn}</td>
+        <td>${p.rrd_available ? '<span class="badge success">Ya</span>' : '<span class="badge warning">Tdk</span>'}</td>
+      </tr>`;
+    });
+  }
   
   html += `</tbody></table></div>`;
   
@@ -319,15 +329,24 @@ async function statsPage(){
   }
   
   cfg.groups.forEach((g, idx) => {
-    html += `<div class="form-grid stats-group" data-idx="${idx}">
+    html += `<div class="form-grid stats-group" style="padding-bottom:10px;border-bottom:1px solid #eee;margin-bottom:10px;" data-idx="${idx}">
       <input type="text" class="field g-name" value="${esc(g.name)}" placeholder="Nama Grup">
       <select class="field g-mode">
         <option value="selected" ${g.mode==='selected'?'selected':''}>Port Terpilih</option>
         <option value="all" ${g.mode==='all'?'selected':''}>Semua port yang dipublikasikan</option>
       </select>
       <label><input type="checkbox" class="g-enabled" ${g.enabled?'checked':''}> Tampilkan</label>
-      <div>${cfg.ports.map(p=>`<label><input class="g-port" type="checkbox" value="${p.port_id}" ${(g.port_ids||[]).includes(p.port_id)?'checked':''}>${esc(p.switch_name)} / ${esc(p.port_number)} (AS${p.member_asn})</label>`).join('')}</div>
-    </div>`;
+      <div style="grid-column: 1 / -1;">`;
+    
+    for (const [switchName, ports] of Object.entries(groupedPorts)) {
+      html += `<div style="margin-top:8px;"><b>${esc(switchName)}</b></div><div style="display:flex; flex-wrap:wrap; gap:10px;">`;
+      ports.forEach(p => {
+        html += `<label><input class="g-port" type="checkbox" value="${p.port_id}" ${(g.port_ids||[]).includes(p.port_id)?'checked':''}>${esc(p.port_number)} (AS${p.member_asn})</label>`;
+      });
+      html += `</div>`;
+    }
+      
+    html += `</div></div>`;
   });
   
   html += `</div></div>
