@@ -131,7 +131,6 @@ async function assignConnection(asn){
       const t = opt.getAttribute('data-type');
       document.getElementById('f-typedisp').textContent = t || 'Belum terdeteksi';
       document.getElementById('f-typehint').textContent = (t && t !== 'Belum terdeteksi') ? 'Terdeteksi via SNMP.' : 'Data kecepatan interface SNMP belum tersedia.';
-      document.getElementById('f-extype').value = t || '';
       const bw = opt.getAttribute('data-bw');
       if(bw) document.querySelector('[name=bandwidth]').value = bw;
     } else {

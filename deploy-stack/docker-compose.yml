@@ -74,4 +74,5 @@ services:
 
 networks:
   mimbar-net:
+    name: deploy-stack_mimbar-net
     driver: bridge

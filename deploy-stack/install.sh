@@ -15,8 +15,10 @@ ACTION=--build
 case "$ACTION" in --help|-h) usage; exit 0;; --check|--build|--deploy|--rollback|--health) ;; *) usage >&2; exit 2;; esac
 cd "$(dirname "$0")"
 umask 077
-PROJECT=${COMPOSE_PROJECT_NAME:-mimbar-stack}
+PROJECT=${COMPOSE_PROJECT_NAME:-deploy-stack}
+LEGACY_PROJECT=${LEGACY_COMPOSE_PROJECT_NAME:-mimbar-stack}
 RELEASE_DIR=${RELEASE_DIR:-releases}
+CRON_FILE=${CRON_FILE:-/etc/cron.d/mimbar-rrd}
 mkdir -p "$RELEASE_DIR"
 mkdir -p /opt/arouterserver/syslog-analyzer/data
 chown -R 10000:10000 /opt/arouterserver/syslog-analyzer/data
@@ -42,6 +44,17 @@ docker compose version >/dev/null 2>&1 || { docker-compose version >/dev/null 2>
  strong "${MIMBAR_SETUP_TOKEN:-}" || { printf '%s\n' 'weak MIMBAR_SETUP_TOKEN' >&2; exit 1; }
  for p in "${DASHBOARD_PORT:-8989}" "${SYSLOG_PORT:-514}"; do case $p in ''|*[!0-9]*) printf '%s\n' "invalid port: $p" >&2; exit 1;; esac; done
  $DOCKER_COMPOSE -p "$PROJECT" config >/dev/null
+}
+ensure_cron_fallback(){
+ command -v crontab >/dev/null 2>&1 || true
+ if [ "$(id -u)" -ne 0 ]; then
+  printf '%s\n' 'cron fallback skipped: installer not running as root' >&2
+  return 0
+ fi
+ cat > "$CRON_FILE" <<'EOF_CRON'
+*/5 * * * * root docker exec arouterserver-dashboard python3 -c 'import sys;sys.path.insert(0,"/app/dashboard");import rrd_manager;rrd_manager.poll_snmp_once()' >/dev/null 2>&1
+EOF_CRON
+ chmod 644 "$CRON_FILE"
 }
 backup_meta(){
  TS=$(date -u +%Y%m%dT%H%M%SZ); D="$RELEASE_DIR/$TS"; mkdir -p "$D"
@@ -70,7 +83,7 @@ ensure_env
 case "$ACTION" in
  --check) preflight; printf '%s\n' 'check ok';;
  --build) preflight; $DOCKER_COMPOSE -p "$PROJECT" build; printf '%s\n' 'build ok; no deploy';;
- --deploy) preflight; backup_meta; $DOCKER_COMPOSE -p "$PROJECT" build; $DOCKER_COMPOSE -p "$PROJECT" up -d; health; printf '%s\n' 'deploy ok';;
+ --deploy) preflight; backup_meta; $DOCKER_COMPOSE -p "$PROJECT" build; $DOCKER_COMPOSE -p "$LEGACY_PROJECT" rm -sf stats-viewer >/dev/null 2>&1 || true; $DOCKER_COMPOSE -p "$PROJECT" up -d; ensure_cron_fallback; health; printf '%s\n' 'deploy ok';;
  --rollback) rollback; printf '%s\n' 'rollback ok';;
  --health) load_env; health; printf '%s\n' 'health ok';;
 esac
