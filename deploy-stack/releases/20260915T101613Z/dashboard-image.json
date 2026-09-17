@@ -1,0 +1,83 @@
+[
+    {
+        "Id": "sha256:663b55a44b530dfe7360670bc808653efa8be4fd0958d2e0a3e59fdbcc9c4c2c",
+        "RepoTags": [
+            "mimbar-dashboard:local"
+        ],
+        "RepoDigests": [
+            "mimbar-dashboard@sha256:663b55a44b530dfe7360670bc808653efa8be4fd0958d2e0a3e59fdbcc9c4c2c"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-09-15T14:43:08.990315331+07:00",
+        "Config": {
+            "User": "10000:10000",
+            "ExposedPorts": {
+                "8989/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG=C.UTF-8",
+                "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+                "PYTHON_VERSION=3.12.14",
+                "PYTHON_SHA256=5c8462af5790baf43a321a1559dbe0db06d1be4300fb85fb53c40060668e548a",
+                "PYTHONUNBUFFERED=1",
+                "PYTHONDONTWRITEBYTECODE=1",
+                "MIMBAR_DATA=/data",
+                "MIMBAR_SOURCE=/app",
+                "MIMBAR_VALIDATOR=disabled",
+                "MIMBAR_ALLOW_DEPLOY=0"
+            ],
+            "Cmd": [
+                "python",
+                "server.py",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8989"
+            ],
+            "WorkingDir": "/app/dashboard",
+            "Labels": {
+                "com.docker.compose.project": "mimbar-validation",
+                "com.docker.compose.service": "dashboard",
+                "com.docker.compose.version": "5.3.1"
+            },
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 84063922,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:411a86676185cb54d695a805b238194a64e9b77e0c723f3802fbb87d333ea0b3",
+                "sha256:3070bb8623db07ca38569112f9b296043371a00bfb3ee4d9f8f63ddfd2f2efca",
+                "sha256:3d664d274420a79749a26f9e5115b2120d46037264011773ca4c52e22780b2ca",
+                "sha256:24257af4ce5bde01d3c7ebd6d366ec4a298ed27c794bbd6832ef5ce934a66170",
+                "sha256:4f62d3882507883661a7eca8f394576fbef5c184efeefbe5658cb40ff84464a6",
+                "sha256:d7bf2af1197f86c0bfb7f0e7e9d1710f9ef0582a8930ed449853efdaef537691",
+                "sha256:f842f84b83943845eccf00b7b6a4dfc6ad2b84e56d47eb852329d9f617cf9287",
+                "sha256:a16cc4298b0de688c33abbbef5d781710d22ce18d4654b18f2f791ca9ca23699",
+                "sha256:74de5b4025fde6859a772fe7f895c98a770abaef3c1a390a5592d219018536ab",
+                "sha256:9398db54a0d372647bf93629d50c8ee57312b5ea3fec3572817cdbec3b40a23f",
+                "sha256:5c84c5892cec27a69011f34793378e0c7d90eefea3cb9c6775e5e1a93479e070",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-09-15T07:43:19.350254201Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:663b55a44b530dfe7360670bc808653efa8be4fd0958d2e0a3e59fdbcc9c4c2c",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "c7iphzdwjl9eetw3ithui4vgr",
+                    "CreatedAt": "2026-09-15T14:43:22.173409693+07:00"
+                }
+            ]
+        }
+    }
+]

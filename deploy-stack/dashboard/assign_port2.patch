@@ -1,0 +1,10 @@
+--- server.py
++++ server.py
+@@ -536,6 +536,9 @@
+             if method=='POST' and path=='/api/switches':return self.response(create_switch(d),201)
+             if method=='POST' and path=='/api/ports':return self.response(create_port(d),201)
++            match=re.fullmatch(r'/api/peers/(\d+)/assign',path)
++            if method=='POST' and match:return self.response(assign_peer_port(int(match[1]),d))
+             match=re.fullmatch(r'/api/switches/(\d+)/discover',path)
+             if method=='POST' and match:return self.response(discover_switch(int(match[1])))
+             match=re.fullmatch(r'/api/nodes/(\d+)',path)

@@ -1,0 +1,27 @@
+--- tests/test_app.py
++++ tests/test_app.py
+@@ -107,6 +107,24 @@
+         self.assertEqual(peer['switch'],'Core')
+         self.assertEqual(peer['port'],'1/1')
+ 
++    def test_assign_peer_to_switch_port(self):
++        status, node, _ = self.request('/nodes', 'POST', {'location': 'SUB', 'name': 'Assign Node'})
++        self.assertEqual(status, 201)
++        node_id = node['id']
++        status, sw, _ = self.request('/switches', 'POST', {'node_id': node_id, 'name': 'Assign SW', 'ip': '192.0.2.55', 'community': 'pub'})
++        self.assertEqual(status, 201)
++        sw_id = sw['id']
++        
++        # Assign peer 64555 to port
++        status, data, _ = self.request('/peers/64555/assign', 'POST', {'switch_id': sw_id, 'port_number': 'xe-0/0/2', 'type': '10G', 'status': 'up', 'bandwidth': '10G'})
++        self.assertEqual(status, 200)
++        self.assertEqual(data['port_number'], 'xe-0/0/2')
++        
++        # Re-assign same peer should update the port
++        status, data2, _ = self.request('/peers/64555/assign', 'POST', {'switch_id': sw_id, 'port_number': 'xe-0/0/3', 'type': '10G', 'status': 'up', 'bandwidth': '10G'})
++        self.assertEqual(status, 200)
++        self.assertEqual(data2['port_number'], 'xe-0/0/3')
++
+     def test_authentication_required(self):
+         self.assertEqual(self.request('/state',auth=False)[0],401)
+         self.assertEqual(self.request('/members',auth=False)[0],401)

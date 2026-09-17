@@ -1,0 +1,31 @@
+--- server.py
++++ server.py
+@@ -328,6 +328,21 @@
+     pid=query('INSERT INTO ports(switch_id,member_asn,port_number,type,status,bandwidth) VALUES(?,?,?,?,?,?)',(sw['id'],asn,*vals))
+     return {'id':pid}
+ 
++def assign_peer_port(asn, d):
++    sw=query('SELECT id FROM switches WHERE id=?',(int(d.get('switch_id')),),one=True)
++    if not sw: raise Problem('Switch tidak ditemukan.',404)
++    if not 1<=asn<=4294967295: raise Problem('ASN tidak valid.')
++    vals=[str(d.get(k,'')).strip() for k in ('port_number','type','status','bandwidth')]
++    if any(not v or len(v)>80 for v in vals): raise Problem('Data port tidak valid.')
++    
++    existing = query('SELECT id FROM ports WHERE member_asn=?', (asn,), one=True)
++    if existing:
++        query('UPDATE ports SET switch_id=?, port_number=?, type=?, status=?, bandwidth=? WHERE id=?', (sw['id'], *vals, existing['id']))
++        pid = existing['id']
++    else:
++        pid = query('INSERT INTO ports(switch_id,member_asn,port_number,type,status,bandwidth) VALUES(?,?,?,?,?,?)', (sw['id'], asn, *vals))
++    return {'id': pid, 'port_number': vals[0]}
++
+ def infer_vendor_model(text):
+     vendor,model='',''
+     text=text.lower()
+@@ -536,6 +551,9 @@
+             if method=='POST' and path=='/api/switches':return self.response(create_switch(d),201)
+             if method=='POST' and path=='/api/ports':return self.response(create_port(d),201)
++            match=re.fullmatch(r'/api/peers/(\d+)/assign',path)
++            if method=='POST' and match:return self.response(assign_peer_port(int(match[1]),d))
+             match=re.fullmatch(r'/api/switches/(\d+)/discover',path)
+             if method=='POST' and match:return self.response(discover_switch(int(match[1])))

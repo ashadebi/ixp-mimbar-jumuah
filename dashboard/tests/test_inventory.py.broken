@@ -1,0 +1,91 @@
+
+import unittest
+import sqlite3
+import json
+from server import app, connect, init_db
+import tempfile
+import os
+
+class TestInventory(unittest.TestCase):
+    def setUp(self):
+        self.db_fd, self.db_path = tempfile.mkstemp()
+        app.config['DATABASE'] = self.db_path
+        app.config['TESTING'] = True
+        self.client = app.test_client()
+        init_db()
+        
+        # Create user and get session
+        with connect() as c:
+            c.execute("INSERT INTO users(id, name, salt, password, role) VALUES(1, 'test', 'salt', 'pass', 'super-admin')")
+            c.execute("INSERT INTO sessions(token, csrf, expires, user_id) VALUES('token123', 'csrf123', 9999999999, 1)")
+            # Add a location for our nodes
+            c.execute("INSERT INTO locations(code, name, source, general, clients) VALUES('LOC1', 'Loc 1', 'src', 'gen', 'cli')")
+            
+        self.cookies = {'session': 'token123'}
+        self.headers = {'X-CSRF-Token': 'csrf123'}
+
+    def tearDown(self):
+        os.close(self.db_fd)
+        os.unlink(self.db_path)
+
+    def test_nodes_crud(self):
+        # Create node
+        rv = self.client.post('/api/nodes', json={'location': 'LOC1', 'name': 'Node 1'}, headers=self.headers, cookies=self.cookies)
+        self.assertEqual(rv.status_code, 200)
+        node_id = rv.json['id']
+        
+        # Read nodes
+        rv = self.client.get('/api/nodes?location=LOC1', cookies=self.cookies)
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(len(rv.json), 1)
+        self.assertEqual(rv.json[0]['name'], 'Node 1')
+        
+        # Delete node
+        rv = self.client.delete(f'/api/nodes/{node_id}', headers=self.headers, cookies=self.cookies)
+        self.assertEqual(rv.status_code, 200)
+        
+        # Verify deletion
+        rv = self.client.get('/api/nodes?location=LOC1', cookies=self.cookies)
+        self.assertEqual(len(rv.json), 0)
+
+    def test_switch_requires_node_and_hide_fields(self):
+        # Create node
+        rv = self.client.post('/api/nodes', json={'location': 'LOC1', 'name': 'Node 1'}, headers=self.headers, cookies=self.cookies)
+        node_id = rv.json['id']
+        
+        # Try to create switch without node (should fail)
+        rv = self.client.post('/api/switches', json={
+            'location': 'LOC1', 'name': 'Sw1', 'ip': '1.1.1.1', 'community': 'public'
+        }, headers=self.headers, cookies=self.cookies)
+        self.assertEqual(rv.status_code, 400, "Switch creation without node should fail")
+        
+        # Create switch with node (using mock for SNMP discovery to succeed or handle failure properly)
+        # Note: testing SNMP discovery failure doesn't create switch
+        # We need to simulate SNMP failure
+        import server
+        original_snmp = server.snmp_get_system
+        try:
+            server.snmp_get_system = lambda ip, comm, to: None
+            rv = self.client.post('/api/switches', json={
+                'location': 'LOC1', 'node_id': node_id, 'name': 'Sw1', 'ip': '1.1.1.1', 'community': 'public'
+            }, headers=self.headers, cookies=self.cookies)
+            self.assertEqual(rv.status_code, 400)
+            self.assertIn('SNMP', rv.json['error'])
+            
+            # Now mock success
+            server.snmp_get_system = lambda ip, comm, to: ('Mock Vendor', 'Mock Model', 'sys-name', 'sys-desc')
+            rv = self.client.post('/api/switches', json={
+                'location': 'LOC1', 'node_id': node_id, 'name': 'Sw1', 'ip': '1.1.1.1', 'community': 'public'
+            }, headers=self.headers, cookies=self.cookies)
+            self.assertEqual(rv.status_code, 200)
+            
+            # Verify switch belongs to node
+            with connect() as c:
+                row = c.execute("SELECT node_id, type, vendor, model FROM switches WHERE id=?", (rv.json['id'],)).fetchone()
+                self.assertEqual(row['node_id'], node_id)
+                self.assertEqual(row['vendor'], 'Mock Vendor')
+                self.assertEqual(row['model'], 'Mock Model')
+                # Manual fields hidden implies they are not set from the request
+                
+        finally:
+            server.snmp_get_system = original_snmp

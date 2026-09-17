@@ -1,0 +1,95 @@
+"""Real browser journey against isolated data; never changes the user's admin account."""
+import importlib.util
+import os
+from pathlib import Path
+import tempfile
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import onboarding
+import threading
+from playwright.sync_api import sync_playwright
+ROOT=Path(__file__).resolve().parents[1]
+spec=importlib.util.spec_from_file_location('mimbar',ROOT/'server.py');app=importlib.util.module_from_spec(spec);spec.loader.exec_module(app)
+with tempfile.TemporaryDirectory() as tmp:
+    app.DATA=Path(tmp);app.DB=app.DATA/'browser.sqlite3';app.init()
+    os.environ['MIMBAR_SETUP_TOKEN']='browser-test-bootstrap'
+    server=app.ThreadingHTTPServer(('127.0.0.1',0),app.Handler)
+    threading.Thread(target=server.serve_forever,daemon=True).start()
+    base='http://127.0.0.1:'+str(server.server_address[1])
+    output=ROOT/'screenshots';output.mkdir(exist_ok=True)
+    with sync_playwright() as p:
+        browser=p.chromium.launch(headless=True,args=['--no-sandbox'])
+        context=browser.new_context(viewport={'width':1440,'height':1050},device_scale_factor=1)
+        page=context.new_page();errors=[]
+        page.on('pageerror',lambda e:errors.append(str(e)))
+        page.goto(base);page.get_by_label('Nama pengguna').wait_for()
+        page.screenshot(path=str(output/'login.png'),full_page=True)
+        page.get_by_label('Nama pengguna').fill('Administrator')
+        page.get_by_label('Kata sandi',exact=True).fill('browser-test-password-123')
+        page.get_by_label('Token penyiapan').fill('browser-test-bootstrap')
+        page.get_by_role('button',name='Buat akun & masuk').click()
+        page.get_by_role('heading',name='Ruang kendali jaringan').wait_for()
+        page.screenshot(path=str(output/'overview.png'),full_page=True)
+        page.get_by_role('button',name='Daftar peer',exact=True).click()
+        page.get_by_label('Cari peer').fill('4434')
+        assert page.locator('tbody tr').count()==2
+        page.get_by_label('Keluarga IP').select_option('6')
+        assert page.locator('tbody tr').count()==1
+        page.get_by_role('button',name='Lokasi jaringan',exact=True).click()
+        page.get_by_role('button',name='Tambah lokasi',exact=True).click()
+        page.get_by_label('Kode lokasi').fill('ML')
+        page.get_by_label('Nama kota').fill('Malang')
+        page.get_by_role('button',name='Simpan',exact=True).click()
+        page.get_by_role('heading',name='Malang',exact=True).wait_for()
+        page.locator('.side-loc[data-location="SUB"]').click()
+        page.get_by_role('button',name='Konfigurasi',exact=True).click()
+        page.get_by_role('button',name='Simpan draft',exact=True).click()
+        page.get_by_text('Draft revisi 2',exact=True).wait_for()
+        page.get_by_role('button',name='Atur kebijakan',exact=True).click()
+        page.get_by_label('IPv4 maksimum').fill('24')
+        page.get_by_role('button',name='Simpan',exact=True).click()
+        page.get_by_text('Draft revisi 3',exact=True).wait_for()
+        page.locator('.tab[data-tab="peers"]').click()
+        page.get_by_role('button',name='Tambah peer',exact=True).click()
+        page.get_by_label('ASN',exact=True).fill('64501')
+        page.get_by_label('Nama jaringan').fill('LAB TEST')
+        page.get_by_label('Alamat IPv4 atau IPv6').fill('192.0.2.199')
+        page.get_by_role('button',name='Simpan',exact=True).click()
+        page.locator('#modal').wait_for(state='hidden')
+        assert any(x['ip']=='192.0.2.199' for x in page.request.get(base+'/api/locations/SUB').json()['peers'])
+        page.get_by_label('Keluarga IP').select_option('all')
+        page.get_by_label('Cari peer').fill('192.0.2.199')
+        page.get_by_role('button',name='Hapus peer 192.0.2.199',exact=True).click()
+        page.get_by_role('button',name='Hapus dari draft',exact=True).click()
+        page.get_by_text('Tidak ada peer yang cocok.',exact=True).wait_for()
+        page.get_by_role('button',name='Deployment',exact=True).click()
+        page.get_by_role('heading',name='Siapkan. Periksa. Terapkan.').wait_for()
+        assert page.get_by_role('button',name='Tinjau & deploy',exact=True).is_disabled()
+        page.get_by_role('button',name='Pengaturan mesin',exact=True).click()
+        page.get_by_label('Pengguna SSH').fill('operator')
+        page.get_by_role('button',name='Simpan',exact=True).click()
+        page.get_by_role('heading',name='Siapkan. Periksa. Terapkan.').wait_for()
+        page.screenshot(path=str(output/'deployment.png'),full_page=True)
+        bot=onboarding.Conversation(app.connect)
+        for uid,text in enumerate(['/start','AG','Jaringan Browser Test','AS13335','1.1.1.0/24','-','AS-CLOUDFLARE','-','-','Tim NOC','noc@example.org','KIRIM'],1):
+            bot.handle({'update_id':uid,'message':{'chat':{'type':'private','id':100},'from':{'id':100},'text':text}})
+        page.get_by_role('button',name='Pengajuan member',exact=True).click()
+        page.get_by_role('heading',name='Menyambut jaringan baru').wait_for()
+        page.get_by_role('button',name='Tinjau',exact=True).click()
+        page.get_by_label('IP peering LAN IPv4',exact=True).fill('103.19.76.250')
+        page.get_by_label('Saya telah memverifikasi',exact=False).check()
+        page.get_by_role('button',name='Simpan keputusan',exact=True).click()
+        page.locator('#modal').wait_for(state='hidden')
+        page.get_by_text('Diterima ke draft',exact=True).wait_for()
+        page.screenshot(path=str(output/'members.png'),full_page=True)
+        page.get_by_role('button',name='Ringkasan',exact=True).click()
+        page.set_viewport_size({'width':390,'height':844})
+        assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
+        page.screenshot(path=str(output/'mobile.png'),full_page=True)
+        page.get_by_role('button',name='Buka navigasi').click()
+        page.get_by_role('button',name='Keluar',exact=True).click()
+        page.get_by_role('button',name='Masuk ke ruang kendali').wait_for()
+        assert not errors,errors
+        browser.close()
+    server.shutdown();server.server_close()
+print('PASS: setup/login, inventory, peer search/filter, add location, save draft, deploy gate, mobile overflow, logout. Screenshots in dashboard/screenshots/.')

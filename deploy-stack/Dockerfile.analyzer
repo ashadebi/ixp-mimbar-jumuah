@@ -1,0 +1,9 @@
+FROM python:3.12-slim
+WORKDIR /app
+RUN useradd --uid 10000 --create-home mimbar && mkdir -p /data && chown 10000:10000 /data
+COPY syslog-analyzer/app/ /app/app/
+COPY syslog-analyzer/oui/ /app/oui/
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 DATA_DIR=/data API_PORT=5514 SYSLOG_UDP_PORT=1514 SYSLOG_TCP_PORT=1514
+USER 10000:10000
+EXPOSE 1514/udp 1514/tcp 5514/tcp
+CMD ["python","-m","app.server"]

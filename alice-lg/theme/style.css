@@ -1,0 +1,103 @@
+/*
+ * Alice IIX Jatim Themplate
+ * -------------------
+ *
+ * Just some minor style changes.
+ */
+ :root {
+  /* Color Variables */
+  /*--footerbg: #1f1e67;*/
+  --rs-name: #223372;
+  --rs-status: #555;
+
+  --rpki-valid: #78c800;
+  --rpki-unknown: #ff9f00;
+  --rpki-invalid: #ff273c;
+}
+ 
+  .page-content {
+    display: flex;
+    flex: 1 0;
+    flex-direction: column;
+    background: #f4f5f7;
+	  background-image: url(/theme/iixjatim.png);
+    background-position: 90% 100%;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    padding: 0px;
+    margin: 0px
+}
+
+/*
+ * Component: Sidebar
+ */
+ .page-sidebar {
+    background: #9ed6fa;
+  }
+  
+  .page-sidebar .sidebar-header {
+    height: 59px;
+    background: #223372;
+  }
+  
+  .page-sidebar .sidebar-header .logo a {
+    color: #222;
+  }
+  
+  .page-sidebar .sidebar-header .title h1 {
+    /*color: white;
+    font-size: 15px;
+    font-weight: 600;*/
+    display: none;
+  }
+  
+  .page-sidebar .sidebar-header .title p {
+    /*color: white;*/
+    display: none;
+  }  
+
+  .page-sidebar .sidebar-header .logo {
+    background: #223372;
+    padding: 5px 5px 0px 10px;
+  }
+
+.page-sidebar .sidebar-header .logo a {
+    display: block;
+  
+    width: 120px;
+    height: 120px;
+  
+    background: url('/theme/iix-logo_light.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+  .page-sidebar .sidebar-header .logo i {
+    display: none;
+  }
+  .page-sidebar h2 {
+    color: #333333;
+    font-weight: 600;
+  }
+  a.page-sidebar:hover, a.routeservers-list:hover, a.routeserver-id:hover, a.routeserver-status:hover, a.bird-version:hover {
+    background: #6cc2f9;
+    text-decoration: none !important;
+  }
+  .page-sidebar .routeservers-list .routeserver-id {
+    color: var(--rs-name);
+    font-size: medium;
+    padding-left: 4px;
+  }
+  .page-sidebar .routeservers-list .routeserver-status .bird-version {
+    color: var(--rs-status);
+    font-size: small;
+    padding-left: 4px;
+  }
+
+  /*
+ * Component: Header
+ */
+.page-header {
+    height: 60px;
+    background: #223372;
+    color: #fff;
+  }

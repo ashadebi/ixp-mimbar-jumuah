@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  arouterserver-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: arouterserver-dashboard
+    restart: unless-stopped
+    ports:
+      - "${DASHBOARD_BIND_HOST:-127.0.0.1}:8989:8989"
+    volumes:
+      - /opt/arouterserver:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SYSLOG_COLLECTOR_URL=http://syslog-analyzer:5514
+      - SYSLOG_COLLECTOR_TOKEN=${SYSLOG_ANALYZER_TOKEN}
+    networks:
+      - mimbar-net
+
+  syslog-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile.analyzer
+    container_name: syslog-analyzer
+    restart: unless-stopped
+    ports:
+      - "${SYSLOG_BIND_HOST:-0.0.0.0}:514:514/udp"
+      - "${SYSLOG_BIND_HOST:-0.0.0.0}:514:514/tcp"
+    volumes:
+      - /opt/arouterserver/syslog-analyzer/data:/data
+      - /opt/arouterserver/dashboard/data:/dashboard-data:ro
+    environment:
+      - SYSLOG_ANALYZER_TOKEN=${SYSLOG_ANALYZER_TOKEN}
+      - DASHBOARD_DB=/dashboard-data/mimbar.sqlite3
+    networks:
+      - mimbar-net
+    mem_limit: 256m
+    cpus: 1
+
+  alice-lg:
+    build:
+      context: .
+      dockerfile: Dockerfile.alice
+    container_name: alice-lg
+    restart: unless-stopped
+    ports:
+      - "8990:8990"
+    volumes:
+      - /opt/arouterserver/alice-lg/alice.conf:/etc/alice-lg/alice.conf
+      - /opt/arouterserver/alice-lg/theme:/theme
+    networks:
+      - mimbar-net
+
+networks:
+  mimbar-net:
+    name: mimbar-internal

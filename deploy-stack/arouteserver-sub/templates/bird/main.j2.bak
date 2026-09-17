@@ -1,0 +1,51 @@
+{% if ip_ver == 4 %}
+{% set max_pref_length = 32 %}
+{% else %}
+{% set max_pref_length = 128 %}
+{% endif %}
+
+{% include "header.j2" %}
+
+
+{{ "header"|include_local_file -}}
+{% if 4 in list_ip_vers %}
+{{ "header4"|include_local_file -}}
+{% endif %}
+{% if 6 in list_ip_vers %}
+{{ "header6"|include_local_file -}}
+{% endif %}
+
+{% include "rpki.j2" %}
+
+
+{% include "irrdb.j2" %}
+
+
+{% include "common.j2" %}
+
+
+{% include "clients.j2" %}
+
+{% include "ji-rc.j2" %}
+{% include "ji-router.j2" %}
+{% include "ji-odix.j2" %}
+{% include "ji-biznet.j2" %}
+{% include "ji-napinfo.j2" %}
+{% include "ji-vnt.j2" %}
+{% include "ji-nusanet.j2" %}
+{% include "ji-mamura.j2" %}
+{% include "ji-abinawa.j2" %}
+{% include "ji-dbn.j2" %}
+{% include "ji-ismaya.j2" %}
+{% include "ji-apex.j2" %}
+{% include "ji-padinet.j2" %}
+{% include "ji-gayatri.j2" %}
+{% include "ji-upaznet.j2" %}
+
+{{ "footer"|include_local_file -}}
+{% if 4 in list_ip_vers %}
+{{ "footer4"|include_local_file -}}
+{% endif %}
+{% if 6 in list_ip_vers %}
+{{ "footer6"|include_local_file -}}
+{% endif %}

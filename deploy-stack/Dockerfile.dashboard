@@ -1,0 +1,13 @@
+FROM python:3.12-slim
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends openssh-client ca-certificates rrdtool snmp && rm -rf /var/lib/apt/lists/*
+COPY dashboard/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && useradd --uid 10000 --create-home mimbar
+COPY seeds/ /app/
+COPY dashboard/ /app/dashboard/
+RUN mkdir -p /data && chown 10000:10000 /data
+WORKDIR /app/dashboard
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 MIMBAR_DATA=/data MIMBAR_SOURCE=/app MIMBAR_VALIDATOR=disabled MIMBAR_ALLOW_DEPLOY=0
+USER 10000:10000
+EXPOSE 8989
+CMD ["python","server.py","--host","0.0.0.0","--port","8989"]

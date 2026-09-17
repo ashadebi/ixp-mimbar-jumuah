@@ -1,0 +1,77 @@
+version: "3.8"
+
+services:
+  arouterserver-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: arouterserver-dashboard
+    user: "0:0"
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    volumes:
+      - /opt/arouterserver:/app
+      - /opt/arouterserver/dashboard/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=Asia/Jakarta
+      - SYSLOG_COLLECTOR_URL=http://syslog-analyzer:5514
+      - SYSLOG_COLLECTOR_TOKEN=${SYSLOG_ANALYZER_TOKEN}
+    networks:
+      - mimbar-net
+
+  syslog-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile.analyzer
+    container_name: syslog-analyzer
+    restart: unless-stopped
+    ports:
+      - "514:514/udp"
+      - "514:514/tcp"
+      - "5514:5514"
+    volumes:
+      - /opt/arouterserver/syslog-analyzer/data:/app/data
+    environment:
+      - TZ=Asia/Jakarta
+      - SYSLOG_BIND_HOST=0.0.0.0
+      - SYSLOG_UDP_PORT=514
+      - SYSLOG_TCP_PORT=514
+      - SYSLOG_API_PORT=5514
+      - SYSLOG_DB_PATH=/app/data/syslog.db
+      - SYSLOG_ANALYZER_TOKEN=${SYSLOG_ANALYZER_TOKEN}
+    networks:
+      - mimbar-net
+
+  alice-lg:
+    image: ghcr.io/alice-lg/alice-lg:6.1.0
+    container_name: alice-lg
+    restart: unless-stopped
+    ports:
+      - "8990:8990"
+    volumes:
+      - /opt/arouterserver/alice-lg/alice.conf:/etc/alice-lg/alice.conf:ro
+      - /opt/arouterserver/alice-lg/theme:/theme:ro
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      - mimbar-net
+
+  stats-viewer:
+    image: nginx:alpine
+    container_name: stats-viewer
+    restart: unless-stopped
+    ports:
+      - "8991:80"
+    volumes:
+      - /opt/arouterserver/stats-viewer/index.html:/usr/share/nginx/html/index.html:ro
+      - /opt/arouterserver/stats-viewer/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - TZ=Asia/Jakarta
+    networks:
+      - mimbar-net
+
+networks:
+  mimbar-net:
+    driver: bridge

@@ -1,0 +1,24 @@
+--- server.py
++++ server.py
+@@ -28,7 +28,7 @@
+ ROOT = Path(__file__).resolve().parent
+ DATA = Path(os.environ.get('MIMBAR_DATA', ROOT / 'data')).resolve()
+ DB = DATA / 'mimbar.sqlite3'
+-SOURCE = ROOT.parent
++SOURCE = Path(os.environ.get('MIMBAR_SOURCE', ROOT.parent)).resolve()
+ VERSION = '2.19.2'
+ POOL = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+ 
+@@ -581,7 +581,11 @@
+                 if not re.fullmatch(r'[A-Z][A-Z0-9-]{1,7}',code) or not 2<=len(name)<=80: raise Problem('Isi kode lokasi (2–8 karakter) dan nama kota.')
+                 # New locations use standard AG template with empty client list, never copy production peers.
+                 g=yaml.safe_load(get_location('AG')['general']);g['cfg']['router_id']='192.0.2.1'
+-                query('INSERT INTO locations(code,name,source,general,clients) VALUES(?,?,?,?,?)',(code,name,'ag',yaml.safe_dump(g,sort_keys=False),'clients: []\n'))
++                loc_source=code.lower()
++                src_dir=SOURCE/'arouteserver-ag'
++                dst_dir=SOURCE/('arouteserver-'+loc_source)
++                if src_dir.exists() and not dst_dir.exists(): shutil.copytree(src_dir, dst_dir)
++                query('INSERT INTO locations(code,name,source,general,clients) VALUES(?,?,?,?,?)',(code,name,loc_source,yaml.safe_dump(g,sort_keys=False),'clients: []\n'))
+                 audit('location','Lokasi '+code+' / '+name+' ditambahkan.',actor);return self.response({'code':code},201)
+             match=re.fullmatch(r'/api/locations/([A-Z0-9-]+)/(policy|peers)',path)
+             if method=='POST' and match:

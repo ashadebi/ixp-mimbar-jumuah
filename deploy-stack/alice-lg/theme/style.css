@@ -1,0 +1,19 @@
+:root {
+  --primary: #2196F3;
+  --bg: #1a1a1a;
+  --text: #f0f0f0;
+  --border: #333;
+}
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+.header { background-color: #111; border-bottom: 1px solid var(--border); }
+.header .title { font-weight: 600; color: var(--text); }
+.header .title::before { content: "Alice BGP Looking Glass"; display: inline-block; }
+.rs-selector { background: #222; border-color: var(--border); color: var(--text); }
+.table { color: var(--text); }
+.table th { background: #222; border-color: var(--border); }
+.table td { border-color: var(--border); }
+.btn-primary { background-color: var(--primary); border-color: var(--primary); }

@@ -1,0 +1,12 @@
+**/data
+**/.env*
+**/__pycache__
+**/.venv
+**/.git
+**/.pytest_cache
+**/*.bak*
+**/*.orig
+**/*.sqlite*
+releases
+.evidence
+.env

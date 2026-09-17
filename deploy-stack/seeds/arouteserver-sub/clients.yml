@@ -1,0 +1,1045 @@
+clients:
+- asn: 4434
+  ip: 103.19.76.41
+  description: AS4434 - RADNET 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 4434
+  ip: 2001:7fa:2:50ba::2:29
+  description: AS4434 - RADNET 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 140395
+  ip: 103.19.76.40
+  description: AS140395 - RADNET DIGITAL INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 140395
+  ip: 2001:7fa:2:50ba::2:28
+  description: AS140395 - RADNET DIGITAL INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 9340
+  ip: 103.19.76.42
+  description: AS9340 - INDO INTERNET
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 9340
+  ip: 2001:7fa:2:50ba::2:2a
+  description: AS9340 - INDO INTERNET
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 9326
+  ip: 103.19.76.44 
+  description: AS9326 - CENTRIN 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 9326
+  ip: 2001:7fa:2:50ba::2:2c
+  description: AS9326 - CENTRIN 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138823
+  ip: 103.19.76.45 
+  description: AS138823 - TRIMITRA USAHA SEJAHTERA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138823
+  ip: 2001:7fa:2:50ba::2:2d
+  description: AS138823 - TRIMITRA USAHA SEJAHTERA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38500
+  ip: 103.19.76.47 
+  description: AS38500 - CROSS NETWORK INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38500
+  ip: 2001:7fa:2:50ba::2:2f
+  description: AS38500 - CROSS NETWORK INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 24521
+  ip: 103.19.76.48
+  description: AS24521 - DATAUTAMA DINAMIKA 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 24521
+  ip: 2001:7fa:2:50ba::2:30
+  description: AS24521 - DATAUTAMA DINAMIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 55670
+  ip: 103.19.76.49
+  description: AS55670 - UNIVERSAL BROADBAND
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 55670
+  ip: 2001:7fa:2:50ba::2:31
+  description: AS55670 - UNIVERSAL BROADBAND
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 133817
+  ip: 103.19.76.58
+  description: AS133817 - INTI DATA TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 133817
+  ip: 2001:7fa:2:50ba::2:3a
+  description: AS133817 - INTI DATA TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 24532
+  ip: 103.19.76.51
+  description: AS24532 - INET GLOBAL INDO
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 24532
+  ip: 2001:7fa:2:50ba::2:33
+  description: AS24532 - INET GLOBAL INDO
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 59149
+  ip: 103.19.76.52
+  description: AS59149 - TUJUH DELAPAN SEMBILAN NET
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 59149
+  ip: 2001:7fa:2:50ba::2:34
+  description: AS59149 - TUJUH DELAPAN SEMBILAN NET
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 46023
+  ip: 103.19.76.62
+  description: AS46023 - QUANTUM TERA NETWORK
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 46023
+  ip: 2001:7fa:2:50ba::2:3e
+  description: AS46023 - QUANTUM TERA NETWORK
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 140388
+  ip: 103.19.76.46
+  description: AS140388 - Garis Waktu Kita
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 140388
+  ip: 2001:7fa:2:50ba::2:2e
+  description: AS140388 - Garis Waktu Kita
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 58381
+  ip: 103.19.76.64
+  description: AS58381 - WOWRACK INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 58381
+  ip: 2001:7fa:2:50ba::2:40
+  description: AS58381 - WOWRACK INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 45312
+  ip: 103.19.76.71
+  description: AS45312 - MEDIA LINTAS DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 45312
+  ip: 2001:7fa:2:50ba::2:47
+  description: AS45312 - MEDIA LINTAS DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38524
+  ip: 103.19.76.60
+  description: AS38524 - LAXO GLOBAL AKSES
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38524
+  ip: 2001:7fa:2:50ba::2:3c
+  description: AS38524 - LAXO GLOBAL AKSES
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+#- asn: 23756
+#  ip: 103.19.76.61
+#  description: 3-PADINET
+#  cfg:
+#    attach_custom_communities:
+#      - "isp_ji_00"
+#- asn: 23756
+#  ip: 2001:7fa:2:50ba::2:3d
+#  description: v6-3-PADINET
+#  cfg:
+#    attach_custom_communities:
+#      - "isp_ji_00"
+- asn: 56246
+  ip: 103.19.76.67
+  description: AS56246 - SUMBER DATA INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 56246
+  ip: 2001:7fa:2:50ba::2:43
+  description: AS56246 - SUMBER DATA INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 135484
+  ip: 103.19.76.72
+  description: AS135484 - Bentang Selaras Teknologi
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 135484
+  ip: 2001:7fa:2:50ba::2:48
+  description: AS135484 - Bentang Selaras Teknologi
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139460
+  ip: 103.19.76.70
+  description: AS139460 - Maxindo Mitra Solusi
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139460
+  ip: 2001:7fa:2:50ba::2:46
+  description: AS139460 - Maxindo Mitra Solusi
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 18059
+  ip: 103.19.76.68
+  description: AS18059 - DWI TUNGGAL PUTRA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 18059
+  ip: 2001:7fa:2:50ba::2:44
+  description: AS18059 - DWI TUNGGAL PUTRA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38778
+  ip: 103.19.76.75
+  description: AS38778 - DUTAKOM WIBAWA PUTRA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38778
+  ip: 2001:7fa:2:50ba::2:4b
+  description: AS38778 - DUTAKOM WIBAWA PUTRA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+#- asn: 55666
+#  ip: 103.19.76.81
+#  description: AS55666 - GMEDIA
+#  cfg:
+#    attach_custom_communities:
+#      - "isp_ji_00"
+#- asn: 55666
+#  ip: 2001:7fa:2:50ba::2:51
+#  description: AS55666 - GMEDIA
+#  cfg:
+#    attach_custom_communities:
+#      - "isp_ji_00"
+- asn: 63862
+  ip: 103.19.76.63
+  description: AS63862 - PASCAL
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 63862
+  ip: 2001:7fa:2:50ba::2:3f
+  description: AS63862 - PASCAL
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 46056
+  ip: 103.19.76.77
+  description: AS46056 - JOVIMARO KARYA AGUNG
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 46056
+  ip: 2001:7fa:2:50ba::2:4d
+  description: AS46056 - JOVIMARO KARYA AGUNG
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138829
+  ip: 103.19.76.43
+  description: AS138829 - CAPOENG DIGITAL NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138829
+  ip: 2001:7fa:2:50ba::2:2b
+  description: AS138829 - CAPOENG DIGITAL NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38753
+  ip: 103.19.76.57
+  description: AS38753 - SOLUSINDO BINTANG PRATAMA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 38753
+  ip: 2001:7fa:2:50ba::2:39
+  description: AS38753 - SOLUSINDO BINTANG PRATAMA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138131
+  ip: 103.19.76.59
+  description: AS138131 - NATANETWORK SOLUTION
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138131
+  ip: 2001:7fa:2:50ba::2:3b
+  description: AS138131 - NATANETWORK SOLUTION
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 45305
+  ip: 103.19.76.56
+  description: AS45305 - LINTAS DATA PRIMA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 45305
+  ip: 2001:7fa:2:50ba::2:38
+  description: AS45305 - LINTAS DATA PRIMA 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139428
+  ip: 103.19.76.79
+  description: AS139428 - LEXXA DATA INDONUSA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139428
+  ip: 2001:7fa:2:50ba::2:4f
+  description: AS139428 - LEXXA DATA INDONUSA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139977
+  ip: 103.19.76.135
+  description: AS139977 - PRISMA MEDIA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 139977
+  ip: 2001:7fa:2:50ba::2:87
+  description: AS139977 - PRISMA MEDIA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138074
+  ip: 103.19.76.78
+  description: AS138074 - WOWRACK CEPAT TEKNOLOGI NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 138074
+  ip: 2001:7fa:2:50ba::2:4e
+  description: AS138074 - WOWRACK CEPAT TEKNOLOGI NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 141126
+  ip: 103.19.76.39
+  description: AS141126 - CUBIESPOT PILAR DATA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 141126
+  ip: 2001:7fa:2:50ba::2:27
+  description: AS141126 - CUBIESPOT PILAR DATA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 45708
+  ip: 103.19.76.38
+  description: AS45708 - PEMERINTAH KOTA SURABAYA
+  cfg:
+    attach_custom_communities:
+      - "other_ji_00"
+- asn: 45708
+  ip: 2001:7fa:2:50ba::2:26
+  description: AS45708 - PEMERINTAH KOTA SURABAYA
+  cfg:
+    attach_custom_communities:
+      - "other_ji_00"
+- asn: 139449
+  ip: 103.19.76.82
+  description: AS139449 - LINTAS DATA MULTIMEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139449
+  ip: 2001:7fa:2:50ba:0:0:2:52
+  description: AS139449 - LINTAS DATA MULTIMEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 142335
+  ip: 103.19.76.84
+  description: AS142335 - GLOBAL INFRA INTERNET
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 142335
+  ip: 2001:7fa:2:50ba:0:0:2:54
+  description: AS142335 - GLOBAL INFRA INTERNET
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 140407
+  ip: 103.19.76.85
+  description: AS140407 - KAWAN INFORMATIKA TEKNOLOGI ABADI 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 140407
+  ip: 2001:7fa:2:50ba:0:0:2:55
+  description: AS140407 - KAWAN INFORMATIKA TEKNOLOGI ABADI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 25152
+  ip: 103.19.76.8
+  description: AS25152 - K-ROOT-SERVER
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 25152
+  ip: 2001:7fa:2:50ba:0:0:2:8
+  description: AS25152 - K-ROOT-SERVER
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139963
+  ip: 103.19.76.87
+  description: AS139963 - MURNI MAKMUR ABADI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139963
+  ip: 2001:7fa:2:50ba:0:0:2:57
+  description: AS139963 - MURNI MAKMUR ABADI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 149665
+  ip: 103.19.76.90
+  description: AS149665 - CYBERNET DATA MULTIMEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 149665
+  ip: 2001:7fa:2:50ba:0:0:2:5a
+  description: AS149665 - CYBERNET DATA MULTIMEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139425
+  ip: 103.19.76.91
+  description: AS139425 - RESTU PANCA ALAM (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_00"
+- asn: 139425
+  ip: 2001:7fa:2:50ba:0:0:2:5b
+  description: AS139425 - RESTU PANCA ALAM (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 132637
+  ip: 103.19.76.92
+  description: AS132637 - BINA INFORMATIKA SOLUSI (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 132637
+  ip: 2001:7fa:2:50ba:0:0:2:5c
+  description: AS132637 - BINA INFORMATIKA SOLUSI (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142347
+  ip: 103.19.76.93
+  description: AS142347 - Sarana Media Cemerlang (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142347
+  ip: 2001:7fa:2:50ba:0:0:2:5d
+  description: AS142347 - Sarana Media Cemerlang (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 141674
+  ip: 103.19.76.94
+  description: AS141674 - DATA ARTA SEDAYA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 141674
+  ip: 2001:7fa:2:50ba:0:0:2:5e
+  description: AS141674 - DATA ARTA SEDAYA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 45305
+  ip: 103.19.76.95
+  description: AS45305 - LINTAS DATA PRIMA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 45305
+  ip: 2001:7fa:2:50ba:0:0:2:5f
+  description: AS45305 - LINTAS DATA PRIMA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149673
+  ip: 103.19.76.96
+  description: AS149673 - Selaras Lintas Nusa (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149673
+  ip: 2001:7fa:2:50ba:0:0:2:60
+  description: AS149673  Selaras Lintas Nusa (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142346
+  ip: 103.19.76.97
+  description: AS142346 - BUMI MANUSIA NETWORK (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142346
+  ip: 2001:7fa:2:50ba:0:0:2:61
+  description: AS142346 - BUMI MANUSIA NETWORK (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 139952
+  ip: 103.19.76.98
+  description: AS139952 - TRISARI DATA INDONUSA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 139952
+  ip: 2001:7fa:2:50ba:0:0:2:62
+  description: AS139952 - TRISARI DATA INDONUSA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 59282
+  ip: 103.19.76.100
+  description: AS59282 - GIGA PATRA MULTIMEDIA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 59282
+  ip: 2001:7fa:2:50ba:0:0:2:64
+  description: AS59282 - GIGA PATRA MULTIMEDIA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+#- asn: 141673
+#  ip: 103.19.76.101
+#  description: MADIUN-MAMURA
+#  cfg:
+#    attach_custom_communities:
+#      - "isp_ji_01"
+#- asn: 141673
+#  ip: 2001:7fa:2:50ba:0:0:2:65
+#  description: V6-MADIUN-MAMURA
+#  cfg:
+#    attach_custom_communities:
+#      - "isp_ji_01"
+- asn: 149359
+  ip: 103.19.76.103
+  description: AS149359 - PERSADA DATA MULTIMEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149359
+  ip: 2001:7fa:2:50ba:0:0:2:67
+  description: AS149359 - PERSADA DATA MULTIMEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149692
+  ip: 103.19.76.104
+  description: AS149692 - BAROKAH NUSANTARA NETWORK (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149692
+  ip: 2001:7fa:2:50ba:0:0:2:68
+  description: AS149692 - BAROKAH NUSANTARA NETWORK (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150222
+  ip: 103.19.76.106
+  description: AS150222 - PAKET SWITCH BERSAMA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150222
+  ip: 2001:7fa:2:50ba::2:6a
+  description: AS150222 - PAKET SWITCH BERSAMA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150193
+  ip: 103.19.76.107
+  description: AS150193 - OLEAN PERMATA TELEMATIKA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150193
+  ip: 2001:7fa:2:50ba::2:6b
+  description: AS150193 - OLEAN PERMATA TELEMATIKA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150191
+  ip: 103.19.76.109
+  description: AS150191 - SARANA INTIMEDIA TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150191
+  ip: 2001:7fa:2:50ba::2:6d
+  description: AS150191 - SARANA INTIMEDIA TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 151600
+  ip: 103.19.76.110
+  description: AS151600 - INTI DATA GUNA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 151600
+  ip: 2001:7fa:2:50ba::2:6e
+  description: AS151600 - INTI DATA GUNA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 152373
+  ip: 103.19.76.112
+  description: AS152373 - ANUGERAH MEDIA DATA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 152373
+  ip: 2001:7fa:2:50ba::2:70
+  description: AS152373 - ANUGERAH MEDIA DATA NUSANTARA 
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142340
+  ip: 103.19.76.113
+  description: AS142340 - LANCAR ARTHA MEDIA DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142340
+  ip: 2001:7fa:2:50ba::2:71
+  description: AS142340 - LANCAR ARTHA MEDIA DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 138854
+  ip: 103.19.76.114
+  description: AS138854 - INTER MEDIALINK SOLUSI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 138854
+  ip: 2001:7fa:2:50ba::2:72
+  description: AS138854 - INTER MEDIALINK SOLUSI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 17440
+  ip: 103.19.76.115
+  description: AS17440 - SINAR ALAM ABADI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 17440
+  ip: 2001:7fa:2:50ba::2:73
+  description: AS17440 - SINAR ALAM ABADI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 58482
+  ip: 103.19.76.117
+  description: AS58482 - PALAPA MEDIA INDONESIA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 58482
+  ip: 2001:7fa:2:50ba::2:75
+  description: AS58482 - PALAPA MEDIA INDONESIA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149707
+  ip: 103.19.76.119
+  description: AS149707 - AKSES DATA INTERNUSA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149707
+  ip: 2001:7fa:2:50ba::2:77
+  description: AS149707 - AKSES DATA INTERNUSA (MADIUN)
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 151521
+  ip: 103.19.76.121
+  description: AS151521 - EXABIT GROUP NETWORK
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 151521
+  ip: 2001:7fa:2:50ba::2:79
+  description: AS151521 - EXABIT GROUP NETWORK
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 138128
+  ip: 103.19.76.122
+  description: AS138128 - SOLNET INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 138128
+  ip: 2001:7fa:2:50ba::2:7a
+  description: AS138128 - SOLNET INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150986
+  ip: 103.19.76.123
+  description: AS150986 - ALTAFOCUS MEDIA CENTER
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150986
+  ip: 2001:7fa:2:50ba::2:7b
+  description: AS150986 - ALTAFOCUS MEDIA CENTER
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 151572
+  ip: 103.19.76.124
+  description: AS151572 - EVOLUTION KARYA LINTAS DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 151572
+  ip: 2001:7fa:2:50ba::2:7c
+  description: AS151572 - EVOLUTION KARYA LINTAS DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142322
+  ip: 103.19.76.125
+  description: AS142322 - KAF MEDIA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142322
+  ip: 2001:7fa:2:50ba::2:7d
+  description: AS142322 - KAF MEDIA NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 137329
+  ip: 103.19.76.126
+  description: AS137329 - ARTHA LINTAS DATA MANDIRI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 137329
+  ip: 2001:7fa:2:50ba::2:7e
+  description: AS137329 - ARTHA LINTAS DATA MANDIRI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150263
+  ip: 103.19.76.138
+  description: AS150263 - ALNET TELEKOMUNIKASI INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 150263
+  ip: 2001:7fa:2:50ba::2:8a
+  description: AS150263 - ALNET TELEKOMUNIKASI INDONESIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 139981
+  ip: 103.19.76.139
+  description: AS139981 - MENAKSOPAL LINK NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 139981
+  ip: 2001:7fa:2:50ba::2:8b
+  description: AS139981 - MENAKSOPAL LINK NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 141139
+  ip: 103.19.76.140
+  description: AS141139 - CHANDELA LINTAS MEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 141139
+  ip: 2001:7fa:2:50ba::2:8c
+  description: AS141139 - CHANDELA LINTAS MEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 140390
+  ip: 103.19.76.137
+  description: AS140390 - BUROQ SARANA INFORMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 140390
+  ip: 2001:7fa:2:50ba::2:89
+  description: AS140390 - BUROQ SARANA INFORMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142338
+  ip: 103.19.76.141
+  description: AS142338 - NEO SANTARA SOLUSI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 142338
+  ip: 2001:7fa:2:50ba::2:8d
+  description: AS142338 - NEO SANTARA SOLUSI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149911
+  ip: 103.19.76.142
+  description: AS149911 - BLITAR SARANA DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149911
+  ip: 2001:7fa:2:50ba::2:8e
+  description: AS149911 - BLITAR SARANA DATA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 139951
+  ip: 103.19.76.143
+  description: AS139951 - ALFATIH INDO TEKNOLOGI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 139951
+  ip: 2001:7fa:2:50ba::2:8f
+  description: AS139951 - ALFATIH INDO TEKNOLOGI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_01"
+- asn: 149913
+  ip: 103.19.76.144
+  description: AS149913 - SARANA KREASI TEKNOLOGI INDONUSA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 149913
+  ip: 2001:7fa:2:50ba::2:90
+  description: AS149913 - SARANA KREASI TEKNOLOGI INDONUSA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 152419
+  ip: 103.19.76.127
+  description: AS152419 - BERBAUR NETWORK CONNECTED
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 152419
+  ip: 2001:7fa:2:50ba::2:7f
+  description: AS152419 - BERBAUR NETWORK CONNECTED
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 141902
+  ip: 103.19.76.145
+  description: AS141902 - JAWA PROVIDER TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 141902
+  ip: 2001:7fa:2:50ba::2:91
+  description: AS141902 - JAWA PROVIDER TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 136863
+  ip: 103.19.76.146
+  description: AS136863 - ERA GLOBAL NUSINDO
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 136863 
+  ip: 2001:7fa:2:50ba::2:92
+  description: AS136863 - ERA GLOBAL NUSINDO
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 149697
+  ip: 103.19.76.149
+  description: AS149697 - GLOBAL INTERNET SOLUSINDO
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 149697
+  ip: 2001:7fa:2:50ba::2:95
+  description: AS149697 - GLOBAL INTERNET SOLUSINDO
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 154146
+  ip: 103.19.76.152
+  description: AS154146 - GLOBAL ASTA SYSTELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 154146
+  ip: 2001:7fa:2:50ba::2:98
+  description: AS154146 - GLOBAL ASTA SYSTELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 150530
+  ip: 103.19.76.153
+  description: AS150530 - MARS DATA TELEKOMUNIKASI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 150530
+  ip: 2001:7fa:2:50ba::2:99
+  description: AS150530 - MARS DATA TELEKOMUNIKASI
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 149662
+  ip: 103.19.76.155
+  description: AS149662 - HOSTNET DATA GLOBAL
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 149662
+  ip: 2001:7fa:2:50ba::2:9b
+  description: AS149662 - HOSTNET DATA GLOBAL
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 58401
+  ip: 103.19.76.156
+  description: AS58401 - DEWATA TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 58401
+  ip: 2001:7fa:2:50ba::2:9c
+  description: AS58401 - DEWATA TELEMATIKA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 63865
+  ip: 103.19.76.157
+  description: AS63865 - MATARAM DATA CENTER
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 63865
+  ip: 2001:7fa:2:50ba::2:9d
+  description: AS63865 - MATARAM DATA CENTER
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 134630
+  ip: 103.19.76.158
+  description: AS134630 - PALAPA GLOBAL NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 134630
+  ip: 2001:7fa:2:50ba::2:9e
+  description: AS134630 - PALAPA GLOBAL NUSANTARA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 147164
+  ip: 103.19.76.159
+  description: AS147164 - NALENDRA GIGANTARA MEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"
+- asn: 147164
+  ip: 2001:7fa:2:50ba::2:9f
+  description: AS147164 - NALENDRA GIGANTARA MEDIA
+  cfg:
+    attach_custom_communities:
+      - "isp_ji_02"

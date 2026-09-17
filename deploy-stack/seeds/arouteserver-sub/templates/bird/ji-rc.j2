@@ -1,0 +1,85 @@
+filter receive_from_AS7597_rc_1 {
+       reject;
+}
+
+filter announce_to_AS7597_rc_1 {
+	if (65520, 0) ~ bgp_community then
+                reject;
+        if (7597, 65520, 0) ~ bgp_large_community then
+                reject;
+        if (rt, 65520, 0) ~ bgp_ext_community then
+                reject;
+        #prefix from iix-jk2 discard
+        if (7597, 1040) ~ bgp_community then
+                reject;
+        if (65000, 1040) ~ bgp_community then
+                reject;
+        if (7597, 65000, 1040) ~ bgp_large_community then
+                reject;
+        if (rt, 65000, 1040) ~ bgp_ext_community then
+                reject;
+       accept;
+}
+
+protocol bgp AS7597_rc_1 {
+        description "AS7597 - ROUTE-COLLECTOR-IDNIC";
+
+        local as 7597;
+        neighbor 103.19.76.69 as 7597;
+
+        ttl security off;
+	rr client;
+
+        interpret communities off;
+
+        # ---------------------------------------
+        ipv4 {
+        table master4;
+
+        import limit 1 action disable;
+        import table on;
+
+        import keep filtered on;
+
+        import filter receive_from_AS7597_rc_1;
+        export filter announce_to_AS7597_rc_1;
+
+        # ---------------------------------------
+        };
+}
+
+filter receive_from_AS7597_rc_2 {
+       reject;
+}
+
+filter announce_to_AS7597_rc_2 {
+       accept;
+}
+
+protocol bgp AS7597_rc_2 {
+        description "AS7597 - ROUTE-COLLECTOR-IDNIC";
+
+        local as 7597;
+        neighbor 2001:7fa:2:50ba::2:45 as 7597;
+
+        ttl security off;
+	rr client;
+
+        interpret communities off;
+
+        # ---------------------------------------
+        ipv6 {
+        table master6;
+
+        import limit 1 action disable;
+        import table on;
+
+        import keep filtered on;
+
+        import filter receive_from_AS7597_rc_2;
+        export filter announce_to_AS7597_rc_2;
+
+        # ---------------------------------------
+        };
+}
+

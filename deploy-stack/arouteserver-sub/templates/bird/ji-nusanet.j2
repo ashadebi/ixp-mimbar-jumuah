@@ -1,0 +1,270 @@
+function next_hop_is_valid_for_AS23679_1()
+{
+        # Checks if NEXT_HOP is one of those allowed for routes announced by AS23679_1
+        if bgp_next_hop = 103.19.76.50 then return true;
+        return false;
+}
+
+filter receive_from_AS23679_1 {
+        if !(source = RTS_BGP ) then
+                { tag_and_reject(65535, 23679); reject "source != RTS_BGP - REJECTING ", net; }
+
+        if !(net.type = NET_IP4) then
+                { tag_and_reject(65535, 23679); reject "AFI not enabled for this peer - REJECTING ", net; }
+
+        scrub_communities_in();
+
+        bgp_community.delete([(7597, 2040)]);
+        bgp_community.delete([(65000, 2040)]);
+        bgp_large_community.delete([(7597, 65000, 2040)]);
+        bgp_ext_community.delete([(rt, 65000, 2040)]);
+
+        # NEXT_HOP
+        if !next_hop_is_valid_for_AS23679_1() then
+                { tag_and_reject(5, 23679); reject "NEXT_HOP [", bgp_next_hop, "] not allowed - REJECTING ", net; }
+
+        # AS_PATH: length
+        if bgp_path.len > 32 then
+                { tag_and_reject(1, 23679); reject "AS_PATH len [", bgp_path.len ,"] longer than 32 - REJECTING ", net; }
+
+        # AS_PATH: left-most ASN
+        if bgp_path.first != 23679 then
+                { tag_and_reject(6, 23679); reject "invalid left-most ASN [", bgp_path.first, "] - REJECTING ", net; }
+
+        # AS_PATH: invalid ASNs
+        if as_path_contains_invalid_asn() then
+                { tag_and_reject(7, 23679); reject "AS_PATH [", bgp_path ,"] contains invalid ASN - REJECTING ", net; }
+
+        # AS_PATH: transit-free ASNs
+        if bgp_path ~ [174, 209, 286, 701, 1239, 1299, 2828, 2914, 3257, 3320, 3356, 3549, 5511, 6453, 6461, 6762, 6830, 7018, 12956] then
+                { tag_and_reject(8, 23679); reject "AS_PATH [", bgp_path ,"] contains transit-free ASN - REJECTING ", net; }
+
+        # Prefix: global blacklist
+        if prefix_is_in_global_blacklist() then
+                { tag_and_reject(3, 23679); reject "prefix is in global blacklist - REJECTING ", net; }
+
+
+        # Prefix: bogon
+        if prefix_is_bogon() then
+                { tag_and_reject(2, 23679); reject "prefix is bogon - REJECTING ", net; }
+
+        # Blackhole request?
+        if is_blackhole_filtering_request() then {
+                accept "blackhole filtering request from AS23679_1 - ACCEPTING ", net;
+        } else {
+
+                # Prefix: length
+                if !prefix_len_is_valid(8, 24) then
+                        { tag_and_reject(13, 23679); reject "prefix len [", net.len, "] not in 8-24 - REJECTING ", net; }
+
+                honor_graceful_shutdown();
+        }
+
+        accept;
+}
+
+filter announce_to_AS23679_1 {
+
+        if (65520, 0) ~ bgp_community then
+                reject;
+        if (7597, 65520, 0) ~ bgp_large_community then
+                reject;
+        if (rt, 65520, 0) ~ bgp_ext_community then
+                reject;
+        #prefix from iix-jk2 discard
+        if (7597, 1040) ~ bgp_community then
+                reject;
+        if (65000, 1040) ~ bgp_community then
+                reject;
+        if (7597, 65000, 1040) ~ bgp_large_community then
+                reject;
+        if (rt, 65000, 1040) ~ bgp_ext_community then
+                reject;
+
+
+        # Blackhole request?
+        if is_blackhole_filtering_request() then {
+                apply_blackhole_filtering_policy();
+        }
+
+        # BGP control communities
+        if !route_can_be_announced_to(23679, 103.19.76.50, "AS23679_1") then
+                reject "route didn't pass control communities checks - NOT ANNOUNCING ", net, " TO AS23679_1";
+
+        apply_prepend(23679, 103.19.76.50);
+
+        add_noexport_noadvertise(23679);
+
+        scrub_communities_out();
+
+        accept;
+}
+
+protocol bgp AS23679_1 {
+        description "AS23679 - MEDIA ANTAR NUSA";
+
+        local as 7597;
+        neighbor 103.19.76.50 as 23679;
+        rs client;
+
+        ttl security off;
+
+        interpret communities off;
+
+        # ---------------------------------------
+        ipv4 {
+        table master4;
+
+        import limit 3000 action disable;
+        import table on;
+
+        import keep filtered on;
+
+        import filter receive_from_AS23679_1;
+        export filter announce_to_AS23679_1;
+
+        # ---------------------------------------
+        };
+}
+
+function next_hop_is_valid_for_AS23679_2()
+{
+        # Checks if NEXT_HOP is one of those allowed for routes announced by AS23679_2
+        if bgp_next_hop = 2001:7fa:2:50ba::2:32 then return true;
+        return false;
+}
+
+filter receive_from_AS23679_2 {
+        if !(source = RTS_BGP ) then
+                { tag_and_reject(65535, 23679); reject "source != RTS_BGP - REJECTING ", net; }
+
+        if !(net.type = NET_IP6) then
+                { tag_and_reject(65535, 23679); reject "AFI not enabled for this peer - REJECTING ", net; }
+
+
+        scrub_communities_in();
+
+        bgp_community.delete([(7597, 2040)]);
+        bgp_community.delete([(65000, 2040)]);
+        bgp_large_community.delete([(7597, 65000, 2040)]);
+        bgp_ext_community.delete([(rt, 65000, 2040)]);
+
+        # NEXT_HOP
+        if !next_hop_is_valid_for_AS23679_2() then
+                { tag_and_reject(5, 23679); reject "NEXT_HOP [", bgp_next_hop, "] not allowed - REJECTING ", net; }
+
+        # AS_PATH: length
+        if bgp_path.len > 32 then
+                { tag_and_reject(1, 23679); reject "AS_PATH len [", bgp_path.len ,"] longer than 32 - REJECTING ", net; }
+
+        # AS_PATH: left-most ASN
+        if bgp_path.first != 23679 then
+                { tag_and_reject(6, 23679); reject "invalid left-most ASN [", bgp_path.first, "] - REJECTING ", net; }
+
+        # AS_PATH: invalid ASNs
+        if as_path_contains_invalid_asn() then
+                { tag_and_reject(7, 23679); reject "AS_PATH [", bgp_path ,"] contains invalid ASN - REJECTING ", net; }
+
+        # AS_PATH: transit-free ASNs
+        if bgp_path ~ [174, 209, 286, 701, 1239, 1299, 2828, 2914, 3257, 3320, 3356, 3549, 5511, 6453, 6461, 6762, 6830, 7018, 12956] then
+                { tag_and_reject(8, 23679); reject "AS_PATH [", bgp_path ,"] contains transit-free ASN - REJECTING ", net; }
+
+
+        # Prefix: only IPv6 Global Unicast space allowed
+        if !(net ~ [2000::/3+]) then
+                { tag_and_reject(10, 23679); reject "prefix is not in IPv6 Global Unicast space - REJECTING ", net; }
+
+        # Prefix: global blacklist
+        if prefix_is_in_global_blacklist() then
+                { tag_and_reject(3, 23679); reject "prefix is in global blacklist - REJECTING ", net; }
+
+
+        # Prefix: bogon
+        if prefix_is_bogon() then
+                { tag_and_reject(2, 23679); reject "prefix is bogon - REJECTING ", net; }
+
+        # Blackhole request?
+        if is_blackhole_filtering_request() then {
+                accept "blackhole filtering request from AS23679_2 - ACCEPTING ", net;
+        } else {
+
+                # Prefix: length
+                if !prefix_len_is_valid(12, 48) then
+                        { tag_and_reject(13, 23679); reject "prefix len [", net.len, "] not in 12-48 - REJECTING ", net; }
+
+                honor_graceful_shutdown();
+        }
+
+
+        accept;
+}
+
+filter announce_to_AS23679_2 {
+
+
+        if (65520, 0) ~ bgp_community then
+                reject;
+        if (7597, 65520, 0) ~ bgp_large_community then
+                reject;
+        if (rt, 65520, 0) ~ bgp_ext_community then
+                reject;
+        #prefix from iix-jk2 discard
+        if (7597, 1040) ~ bgp_community then
+                reject;
+        if (65000, 1040) ~ bgp_community then
+                reject;
+        if (7597, 65000, 1040) ~ bgp_large_community then
+                reject;
+        if (rt, 65000, 1040) ~ bgp_ext_community then
+                reject;
+
+
+        # Blackhole request?
+        if is_blackhole_filtering_request() then {
+                apply_blackhole_filtering_policy();
+        }
+
+        # BGP control communities
+        if !route_can_be_announced_to(23679, 2001:7fa:2:50ba::2:32, "AS23679_2") then
+                reject "route didn't pass control communities checks - NOT ANNOUNCING ", net, " TO AS23679_2";
+
+        apply_prepend(23679, 2001:7fa:2:50ba::2:32);
+
+
+        add_noexport_noadvertise(23679);
+
+        scrub_communities_out();
+
+        accept;
+}
+
+protocol bgp AS23679_2 {
+        description "AS23679 - MEDIA ANTAR NUSA";
+
+        local as 7597;
+        neighbor 2001:7fa:2:50ba::2:32 as 23679;
+        rs client;
+
+        ttl security off;
+
+        interpret communities off;
+
+        # ---------------------------------------
+        ipv6 {
+        table master6;
+
+        import limit 1000 action disable;
+
+
+        import table on;
+
+        import keep filtered on;
+
+        import filter receive_from_AS23679_2;
+        export filter announce_to_AS23679_2;
+
+        # ---------------------------------------
+        };
+
+                }
+

@@ -1,0 +1,142 @@
+function IIX_PREFIXES ()
+prefix set prefixes_v4;
+prefix set prefixes_v6;
+{
+        prefixes_v4 = [
+                218.100.32.0/24,
+		103.19.76.0/24
+        ];
+
+        if net.type = NET_IP4 then
+                if net ~ prefixes_v4 then return true;
+
+        prefixes_v6 = [
+                2001:7fa:2:50ba::/64{64,127}
+        ];
+
+        if net.type = NET_IP6 then
+                if net ~ prefixes_v6 then return true;
+
+        return false;
+}
+
+filter receive_from_AS7597_router_1 {
+       if (7597, 1040) ~ bgp_community then
+       {
+          bgp_next_hop=103.19.76.4;
+          bgp_community.add((65000, 1040));
+          bgp_large_community.add((7597, 65000, 1040));
+          bgp_ext_community.add((rt, 65000, 1040));
+          accept;
+       }
+       if IIX_PREFIXES() then
+       {
+          bgp_next_hop=103.19.76.4;
+          accept;
+       }
+
+       reject;
+}
+
+filter announce_to_AS7597_router_1 {
+       if (7597, 2040) ~ bgp_community then
+          accept;
+
+       if (65000, 2040) ~ bgp_community then
+       {
+          bgp_community.add((7597,2040));
+          accept;
+       }
+
+       if (7597, 1040) ~ bgp_community then
+          reject;
+ 
+       accept;
+}
+
+protocol bgp AS7597_router_1 {
+        description "AS7597 - RTR-JI2JK";
+
+        local as 7597;
+        neighbor 103.19.76.4 as 7597;
+
+        ttl security off;
+
+        interpret communities off;
+
+        # ---------------------------------------
+        ipv4 {
+        table master4;
+
+        import limit 25000 action disable;
+        import table on;
+
+        import keep filtered on;
+
+        import filter receive_from_AS7597_router_1;
+        export filter announce_to_AS7597_router_1;
+
+        # ---------------------------------------
+        };
+}
+
+filter receive_from_AS7597_router_2 {
+       if (7597, 1040) ~ bgp_community then
+       {
+          bgp_next_hop=2001:7fa:2:50ba::2:4;
+          bgp_community.add((65000, 1040));
+          bgp_large_community.add((7597, 65000, 1040));
+          bgp_ext_community.add((rt, 65000, 1040));
+          accept;
+       }
+       if IIX_PREFIXES() then
+       {
+          bgp_next_hop=2001:7fa:2:50ba::2:4;
+          accept;
+       }
+
+       reject;
+}
+
+filter announce_to_AS7597_router_2 {
+       if (7597, 2040) ~ bgp_community then
+          accept;
+
+       if (65000, 2040) ~ bgp_community then
+       {
+          bgp_community.add((7597,2040));
+          accept;
+       }
+
+       if (7597, 1040) ~ bgp_community then
+          reject;
+ 
+       accept;
+}
+
+protocol bgp AS7597_router_2 {
+        description "AS7597 - RTR-JI2JK";
+
+        local as 7597;
+        neighbor 2001:7fa:2:50ba::2:4 as 7597;
+
+        ttl security off;
+
+        interpret communities off;
+
+        # ---------------------------------------
+        ipv6 {
+        table master6;
+
+        import limit 8000 action disable;
+        import table on;
+
+        import keep filtered on;
+
+        import filter receive_from_AS7597_router_2;
+        export filter announce_to_AS7597_router_2;
+
+        # ---------------------------------------
+        };
+}
+

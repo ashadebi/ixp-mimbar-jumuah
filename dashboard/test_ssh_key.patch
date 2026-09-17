@@ -1,0 +1,25 @@
+--- tests/test_app.py
++++ tests/test_app.py
+@@ -193,6 +193,22 @@
+     def test_machine_validation(self):
+         payload={'location':'AG','name':'Injected','host':'127.0.0.1;id','router_id':'1.2.3.4','ssh_user':'root'}
+         self.assertEqual(self.request('/machines','POST',payload)[0],400)
++
++    def test_machine_ssh_key(self):
++        payload={'location':'SUB','name':'Test SSH Key Machine','host':'10.0.0.99','router_id':'10.0.0.99','ssh_user':'root','ssh_key':'-----BEGIN PRIVATE KEY-----\nMY KEY\n-----END PRIVATE KEY-----'}
++        status, result, _ = self.request('/machines','POST',payload)
++        self.assertEqual(status, 201)
++        mid = result['id']
++        
++        status, result, _ = self.request('/machines')
++        self.assertEqual(status, 200)
++        machine = next(m for m in result if m['id'] == mid)
++        self.assertNotIn('ssh_key', machine)
++        self.assertEqual(machine['has_ssh_key'], True)
++        
++        args = app.ssh_args({'id': mid, 'ssh_user': 'root'})
++        self.assertIn('-i', args)
++
+     def test_deploy_cannot_bypass_validation(self):
+         config='router id 192.0.2.1;';digest=hashlib.sha256(config.encode()).hexdigest()
+         app.query('INSERT INTO jobs(id,machine,location,revision,machine_revision,status,created,config,sha256) VALUES(?,?,?,?,?,?,?,?,?)',('a'*32,'sub-rs3','SUB',1,1,'generated',0,config,digest))

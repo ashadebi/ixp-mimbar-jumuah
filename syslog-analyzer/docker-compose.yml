@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  syslog-analyzer:
+    build: .
+    container_name: syslog-analyzer
+    restart: unless-stopped
+    ports:
+      - "514:514/udp"
+      - "514:514/tcp"
+    volumes:
+      - ./data:/data
+      - /opt/arouterserver/dashboard/data:/dashboard-data:ro
+    environment:
+      - SYSLOG_ANALYZER_TOKEN=
+      - DASHBOARD_DB=/dashboard-data/mimbar.sqlite3
+    network_mode: "bridge"

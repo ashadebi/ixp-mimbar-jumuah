@@ -1,0 +1,20 @@
+[Unit]
+Description=Mimbar IXP Telegram member onboarding
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/arouterserver/dashboard
+ExecStart=/opt/arouterserver/dashboard/.venv/bin/python /opt/arouterserver/dashboard/telegram_bot.py
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/arouterserver/dashboard/data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
