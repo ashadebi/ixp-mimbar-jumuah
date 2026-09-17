@@ -118,21 +118,41 @@ async function assignConnection(asn){
   window.updatePortList = function(swId, switches) {
     const sw = switches.find(s => s.id == swId);
     const sel = document.getElementById('f-port');
-    sel.innerHTML = '<option value="">Pilih Port</option>';
+    const manualInput = document.getElementById('f-port-manual');
+    sel.innerHTML = '<option value="">Pilih Port (SNMP)</option>';
     if(!sw) return;
-    const sorted = [...sw.ports].sort((a,b)=>a.port_number.localeCompare(b.port_number, undefined, {numeric:true}));
+    const sorted = [...(sw.ports||[])].sort((a,b)=>a.port_number.localeCompare(b.port_number, undefined, {numeric:true}));
     for(const p of sorted) {
-      sel.innerHTML += `<option value="${esc(p.port_number)}" data-type="${esc(p.type)}" data-bw="${esc(p.bandwidth)}">${esc(p.port_number)}</option>`;
+      const desc = p.description ? ` (${p.description})` : '';
+      const asnTag = p.member_asn && Number(p.member_asn) !== Number(asn) ? ` [AS${p.member_asn}]` : '';
+      sel.innerHTML += `<option value="${esc(p.port_number)}" data-type="${esc(p.type)}" data-bw="${esc(p.bandwidth)}">${esc(p.port_number)}${esc(desc)}${esc(asnTag)}</option>`;
     }
+    sel.innerHTML += '<option value="__manual__">+ Ketik Port Manual...</option>';
+    manualInput.style.display = 'none';
+    manualInput.value = '';
+    window.updatePortDetails(sel);
   };
   window.updatePortDetails = function(sel) {
+    const manualInput = document.getElementById('f-port-manual');
+    if (sel.value === '__manual__') {
+      manualInput.style.display = 'block';
+      manualInput.focus();
+      document.getElementById('f-typedisp').textContent = 'Manual / Belum terdeteksi';
+      document.getElementById('f-typehint').textContent = 'Ketik nama port fisik secara manual.';
+      return;
+    } else {
+      manualInput.style.display = 'none';
+    }
     const opt = sel.options[sel.selectedIndex];
     if(opt && opt.value) {
       const t = opt.getAttribute('data-type');
       document.getElementById('f-typedisp').textContent = t || 'Belum terdeteksi';
-      document.getElementById('f-typehint').textContent = (t && t !== 'Belum terdeteksi') ? 'Terdeteksi via SNMP.' : 'Data kecepatan interface SNMP belum tersedia.';
+      document.getElementById('f-typehint').textContent = (t && t !== 'Belum terdeteksi') ? 'Terdeteksi via SNMP.' : 'Data interface SNMP belum tersedia.';
       const bw = opt.getAttribute('data-bw');
-      if(bw) document.querySelector('[name=bandwidth]').value = bw;
+      if(bw) {
+        const bwField = document.querySelector('#modal [name=bandwidth]');
+        if(bwField) bwField.value = bw;
+      }
     } else {
       document.getElementById('f-typedisp').textContent = 'Belum terdeteksi';
       document.getElementById('f-typehint').textContent = 'Pilih port untuk melihat tipe.';
@@ -149,14 +169,12 @@ async function assignConnection(asn){
        </div>
        <div>
          <label class="label" for="f-port">Port</label>
-         <div style="display:flex;gap:0.5rem">
-           <select class="field" id="f-port" onchange="updatePortDetails(this); if(this.value){document.getElementById('f-port-input').value=this.value}">
-             <option value="">Pilih / Ketik manual...</option>
-           </select>
-           <input class="field" name="port_number" id="f-port-input" placeholder="mis. xe-0/0/2" style="flex:1">
-         </div>
+         <select class="field" id="f-port" onchange="updatePortDetails(this)">
+           <option value="">Pilih Switch Terlebih Dahulu</option>
+         </select>
+         <input class="field" id="f-port-manual" placeholder="Ketik nama port manual (mis. xe-0/0/2)" style="display:none; margin-top:0.5rem">
        </div>
-       <div><span class=label>Tipe port fisik</span><div id="f-typedisp">Belum terdeteksi</div><small id="f-typehint">Pilih port untuk melihat tipe.</small></div>
+       <div><span class="label">Tipe port fisik</span><div id="f-typedisp">Belum terdeteksi</div><small id="f-typehint">Pilih port untuk melihat tipe.</small></div>
        
        <div>
          <label class="label" for="f-status">Status</label>
@@ -169,69 +187,22 @@ async function assignConnection(asn){
        ${field('MAC Address', 'mac_address', 'e.g. 00:11:22:33:44:55')}
      </div>`,
     async d => {
+      const selPort = document.getElementById('f-port');
+      const manualVal = document.getElementById('f-port-manual').value.trim();
+      if (selPort.value === '__manual__') {
+        if (!manualVal) throw new Error('Silakan isi nama port manual.');
+        d.port_number = manualVal;
+      } else {
+        d.port_number = selPort.value;
+      }
+      if (!d.switch_id) throw new Error('Silakan pilih Switch.');
+      if (!d.port_number) throw new Error('Silakan pilih Port.');
       await api('/peers/'+asn+'/assign', 'POST', d);
       toast('Port berhasil ditetapkan.');
       if(view==='peers'||view==='location') { detail=await api('/locations/'+selectedLocation); render(); }
     }
   );
 }
-
-function startPolling(){clearInterval(poll);poll=setInterval(async()=>{if(!session||(view!=='members'&&!state.jobs.some(j=>['generating','validating','deploying'].includes(j.status))))return;try{await refresh();if(view==='deploy'||view==='activity'||view==='members')render()}catch{}},2500)}
-const context=document.modelContext;if(context?.registerTool){try{Promise.resolve(context.registerTool({name:'inspect_route_server_inventory',description:'Read locations and registered route servers visible to the signed-in administrator.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:async input=>{if(!input||Object.keys(input).length)throw Error('No arguments accepted.');if(!session)throw Error('Sign in first.');await refresh();return {locations:state.locations,machines:state.machines}}})).catch(()=>{})}catch{}}
-try{session=await api('/session');if(session.user){await refresh();shell();startPolling()}else login(session.setup)}catch(e){$('#app').innerHTML=empty('Dashboard belum dapat dimuat',esc(e.message),'alert')}
-function iixjiPage(){
-  if(!window.iixji_data) return empty('Memuat data', '');
-  return heading('Daftar Member IIX-JI','Daftar member ISP Lokal Jawa Timur di IIX-JI dan ISP Luar yang sudah Melapor',btn('Tambah Member','add-iixji','plus','primary'))+
-  `<div class="card"><div class="card-head"><h2>Member IIX-JI</h2></div>
-  <div class="table-wrap"><table><thead><tr><th>ASN</th><th>Nama Jaringan</th><th>Tipe</th><th>Status</th><th>Kontak</th><th>Catatan</th><th></th></tr></thead><tbody>
-  ${window.iixji_data.map(x=>`<tr><td>AS${esc(x.asn)}</td><td><strong>${esc(x.name)}</strong></td><td>${esc(x.type)}</td><td>${esc(x.status)}</td><td>${esc(x.contact)}</td><td>${esc(x.notes)}</td><td>
-  <button class="btn small table-action" data-edit-iixji="${x.id}">Edit</button>
-  <button class="btn small table-action" data-del-iixji="${x.id}">Hapus</button>
-  </td></tr>`).join('')||'<tr><td colspan="7">Belum ada member.</td></tr>'}
-  </tbody></table></div></div>`;
-}
-
-function addIixjiMember(){
-  showDialog('Tambah Member IIX-JI',`<div class="form-grid">
-  ${field('ASN','asn','Contoh: 12345','','type="number"')}
-  ${field('Nama Jaringan','name','')}
-  <div><label class="label">Tipe</label><select name="type" class="field"><option>Lokal Jatim</option><option>Luar Jatim</option></select></div>
-  <div><label class="label">Status</label><select name="status" class="field"><option>Aktif</option><option>Melapor</option></select></div>
-  ${field('Kontak','contact','')}
-  ${field('Catatan','notes','','','')}</div>`, async d=>{
-    await api('/iixji-members','POST',d); window.iixji_data=await api('/iixji-members'); render();;toast('Member ditambahkan.'); // Wait! `api` prepends /api!
-    // So if path is `/iixji-members`, `api` will request `/api/iixji-members`!
-    // I should check `api()` implementation.
-  })
-}
-
-async function editIixjiMember(id){
-  const x = window.iixji_data.find(m => m.id == id);
-  if(!x) return;
-  showDialog('Edit Member IIX-JI',`<div class="form-grid">
-  ${field('ASN','asn','Contoh: 12345',x.asn,'type="number"')}
-  ${field('Nama Jaringan','name','',x.name)}
-  <div><label class="label">Tipe</label><select name="type" class="field"><option ${x.type==='Lokal Jatim'?'selected':''}>Lokal Jatim</option><option ${x.type==='Luar Jatim'?'selected':''}>Luar Jatim</option></select></div>
-  <div><label class="label">Status</label><select name="status" class="field"><option ${x.status==='Aktif'?'selected':''}>Aktif</option><option ${x.status==='Melapor'?'selected':''}>Melapor</option></select></div>
-  ${field('Kontak','contact','',x.contact)}
-  ${field('Catatan','notes','',x.notes,'')}</div>`, async d=>{
-    await api('/iixji-members/'+id,'PUT',d);
-    toast('Member diperbarui.');
-    if(view==='iixji'){ window.iixji_data=await api('/iixji-members'); render(); }
-  })
-}
-
-async function delIixjiMember(id){
-  const x = window.iixji_data.find(m => m.id == id);
-  showDialog('Hapus Member IIX-JI',`<p>Hapus member <b>${esc(x.name)}</b>?</p>`,async ()=>{
-    await api('/iixji-members/'+id,'DELETE');
-    toast('Member dihapus.');
-    if(view==='iixji'){ window.iixji_data=await api('/iixji-members'); render(); }
-  });
-  $('#modal button[type="submit"]').textContent='Hapus';
-}
-
-document.addEventListener('click',e=>{const v=e.target.dataset.portGraph;if(v){const [s,p]=v.split(':');showDialog('Grafik utilisasi',`<img class="port-graph" src="/api/switches/${s}/ports/${p}/graph" alt="Grafik utilisasi port">`,async()=>{});}});
 
 async function syslogPage(){
   const summary = await api('/syslog/summary');
